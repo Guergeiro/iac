@@ -1,0 +1,3 @@
+- include_tasks: cloudflare.yml
+- include_tasks: nginx.yml
+- include_tasks: wireguard.yml

@@ -1,0 +1,31 @@
+- include_vars: wireguard.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}"
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "weejewel/wg-easy:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    capabilities:
+      - net_admin
+      - sys_module
+    sysctls:
+      "net.ipv4.conf.all.src_valid_mark": "1"
+      "net.ipv4.ip_forward": "1"
+    env:
+      "WG_HOST": "{{ hostname_vpn }}"
+      "TZ": "{{ timezone }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}:/etc/wireguard"
+    networks:
+      - name: docker_network
+    restart_policy: always

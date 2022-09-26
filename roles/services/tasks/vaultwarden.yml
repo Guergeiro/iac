@@ -1,0 +1,81 @@
+- include_vars: vaultwarden.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}/data"
+      - "{{ docker_dir }}/{{ container_name }}/rclone"
+
+- name: Copy the config file
+  copy:
+    src: files/vaultwarden.conf
+    dest: "{{ docker_dir }}/{{ container_name }}/rclone/rclone.conf"
+    decrypt: yes
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "vaultwarden/server:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+      "WEBSOCKET_ENABLED": "true"
+      "SIGNUPS_VERIFY": "true"
+      "SIGNUPS_ALLOWED": "false"
+      "DISABLE_ADMIN_TOKEN": "true"
+      "DOMAIN": "{{ hostname_vaultward }}"
+      "SMTP_HOST": "{{ smtp_host }}"
+      "SMTP_FROM": "{{ smtp_from }}"
+      "SMTP_FROM_NAME": "{{ smtp_from_name }}"
+      "SMTP_SECURITY": "{{smtp_security }}"
+      "SMTP_PORT": "{{ smtp_port }}"
+      "SMTP_USERNAME": "{{ smtp_username }}"
+      "SMTP_PASSWORD": "{{ smtp_password }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}/data:/data"
+    networks:
+      - name: docker_network
+    restart_policy: always
+
+- name: Make sure the {{ container_name }}-backup container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}-backup"
+    image: "ttionya/vaultwarden-backup:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+      "CRON": "{{ cron }}"
+      "RCLONE_REMOTE_NAME": !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          37323035653630306134353766346534613736316537623733373761616566373339323961383537
+          6338323638373130343939613562613433336262663834330a623532643231393665396665653037
+          38626464633239356566333639393666373430313432646634643964366136386231303935376235
+          3836306230373165610a333434363164653733326333313666616138373162336261636163363662
+          3330
+      "RCLONE_REMOTE_DIR": !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          37663732313034666534353935383066666233383731303065366638363166343430363333363264
+          6565363664363332396233383133613730623832643832660a326533376433336231626435396335
+          38303032326231666438666565666232643530623933343735353537323934386536393935626266
+          3937623335343537330a316366366361373131343139626565663866363037663765396339386133
+          3933
+      "ZIP_TYPE": "7z"
+      "ZIP_PASSWORD": "{{ zip_password }}"
+      "BACKUP_KEEP_DAYS": "7"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}/data:/bitwarden/data"
+      - "{{ docker_dir }}/{{ container_name }}/rclone:/config/rclone"
+    restart_policy: always

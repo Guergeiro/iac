@@ -1,0 +1,45 @@
+- include_tasks: arch.yml
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_facts['distribution'] }}.yml"
+
+- name: Install dependencies
+  package:
+    state: present
+    name: "{{ docker_deps }}"
+
+- name: Install Docker (Ubuntu)
+  when: ansible_facts['distribution'] == 'Ubuntu'
+  block:
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: "deb [arch={{ repo_arch }}] https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }} {{ ansible_lsb['codename'] }} stable"
+        state: present
+
+- name: Update apt
+  when: ansible_facts['os_family'] == 'Debian'
+  apt:
+    update_cache: yes
+    name: "{{ docker_packages }}"
+    state: present
+
+- name: Ensure group docker exists
+  group:
+    name: docker
+    state: present
+
+- name: Add user "{{ username }}" to group docker
+  user:
+    name: "{{ username }}"
+    groups:
+      - docker
+    append: yes
+- name: Create general docker network
+  community.docker.docker_network:
+    name: docker_network
+    state: present

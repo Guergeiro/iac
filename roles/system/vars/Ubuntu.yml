@@ -1,0 +1,5 @@
+extra_packages:
+  - cron
+  - net-tools
+  - vim
+  - apache2-utils

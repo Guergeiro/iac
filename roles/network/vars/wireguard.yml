@@ -1,0 +1,2 @@
+container_name: "wireguard"
+hostname_vpn: "vpn.{{ base_hostname }}"

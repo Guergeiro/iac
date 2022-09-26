@@ -1,0 +1,9 @@
+docker_deps:
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+
+docker_packages:
+  - docker
+  - docker-compose

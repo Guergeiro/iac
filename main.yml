@@ -1,0 +1,27 @@
+- hosts: lisbon
+  gather_facts: no
+  pre_tasks:
+    - import_tasks: tasks/ssh_juggle.yml
+
+- hosts: lisbon
+  become: yes
+
+  roles:
+    - role: system
+      tags:
+        - sytem
+    - role: docker
+      tags:
+        - docker
+    - role: geerlingguy.security
+      tags:
+        - security
+    - role: security
+      tags:
+        - security
+    - role: network
+      tags:
+        - network
+    - role: services
+      tags:
+        - services
