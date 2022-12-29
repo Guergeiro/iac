@@ -17,4 +17,6 @@ domains:
   - "www.webmail.{{ base_hostname }}"
   - "vaultwarden.{{ base_hostname }}"
   - "www.vaultwarden.{{ base_hostname }}"
+  - "homeassistant.{{ base_hostname }}"
+  - "www.homeassistant.{{ base_hostname }}"
 cron: "@daily"

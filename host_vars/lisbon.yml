@@ -9,3 +9,4 @@ security_ssh_port: !vault |
           6565353163353732370a383430303061303163376131363764333235313639646230313630313161
           3335
 base_hostname: "brenosalles.com"
+docker_dir: "/opt/docker/data"

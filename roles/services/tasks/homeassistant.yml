@@ -1,0 +1,45 @@
+- include_vars: homeassistant.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}"
+
+- name: Copy the config file
+  copy:
+    src: files/homeassistant/
+    dest: "{{ docker_dir }}/{{ container_name }}/"
+    decrypt: yes
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install hacs
+  shell: wget -O - https://get.hacs.xyz | bash -
+  args:
+    chdir: "{{ docker_dir }}/{{ container_name }}/"
+    executable: /bin/bash
+
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "homeassistant/home-assistant:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+      "DISABLE_JEMALLOC": "true"
+    exposed_ports:
+      - 8123
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}:/config"
+    network_mode: "host"
+    restart_policy: always

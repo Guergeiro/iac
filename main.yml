@@ -8,20 +8,17 @@
 
   roles:
     - role: system
-      tags:
-        - sytem
     - role: docker
-      tags:
-        - docker
     - role: geerlingguy.security
-      tags:
-        - security
     - role: security
-      tags:
-        - security
     - role: network
-      tags:
-        - network
     - role: services
-      tags:
-        - services
+
+# - hosts: localhost
+
+#   roles:
+#     - role: system
+#       become: yes
+#     - role: docker
+#       become: yes
+#     - role: dotfiles

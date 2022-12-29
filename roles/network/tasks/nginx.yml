@@ -27,4 +27,5 @@
       - "{{ docker_dir }}/{{ container_name }}/letsencrypt:/etc/letsencrypt"
     networks:
       - name: docker_network
+    purge_networks: yes
     restart_policy: always

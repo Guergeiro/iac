@@ -28,4 +28,5 @@
       - "{{ docker_dir }}/{{ container_name }}:/etc/wireguard"
     networks:
       - name: docker_network
+    purge_networks: yes
     restart_policy: always

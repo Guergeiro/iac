@@ -1,1 +1,2 @@
 - include_tasks: vaultwarden.yml
+- include_tasks: homeassistant.yml

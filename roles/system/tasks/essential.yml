@@ -1,14 +1,13 @@
 - name: Ubuntu specific tasks
-  become: yes
-  when: ansible_facts['distribution'] == "Ubuntu"
+  when: ansible_facts['lsb']['id'] == "Ubuntu"
   block:
     - name: Remove cloud-config to avoid boot delay
       apt:
         name: cloud-config
         state: absent
 
-- name: Update and upgrade apt packages (Debian and Ubuntu)
-  when: ansible_os_family == "Debian"
+- name: Update and upgrade apt packages
+  when: ansible_facts['os_family'] == "Debian"
   apt:
     upgrade: yes
     autoremove: yes
@@ -25,21 +24,24 @@
     msg: Rebooting due to a kernel update
   when: reboot_required_file.stat.exists
 
-- name: Set the hostname
-  hostname:
-    name: "{{ inventory_hostname }}"
-
 - name: Include OS-specific variables
-  include_vars: "{{ ansible_facts['distribution'] }}.yml"
+  include_vars: "{{ ansible_facts['lsb']['id'] }}.yml"
 
 - name: Install extra packages
   package:
     name: "{{ extra_packages }}"
     state: present
 
-- name: Shut down every day at 4:30 AM
-  cron:
-    name: "Power off at night to save energy"
-    minute: "30"
-    hour: "4"
-    job: "/sbin/reboot"
+- name: homeserver tasks
+  when: ansible_facts['hostname'] != "localhost"
+  block:
+    - name: Set the hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Shut down every day at 4:30 AM
+      cron:
+        name: "Power off at night to save energy"
+        minute: "30"
+        hour: "4"
+        job: "/sbin/reboot"

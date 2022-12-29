@@ -1,7 +1,7 @@
 - include_tasks: arch.yml
 
 - name: Include OS-specific variables
-  include_vars: "{{ ansible_facts['distribution'] }}.yml"
+  include_vars: "{{ lsb_base_id }}.yml"
 
 - name: Install dependencies
   package:
@@ -9,7 +9,7 @@
     name: "{{ docker_deps }}"
 
 - name: Install Docker (Ubuntu)
-  when: ansible_facts['distribution'] == 'Ubuntu'
+  when: lsb_base_id == 'Ubuntu'
   block:
     - name: Add Docker GPG apt Key
       apt_key:
@@ -18,10 +18,10 @@
 
     - name: Add Docker Repository
       apt_repository:
-        repo: "deb [arch={{ repo_arch }}] https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }} {{ ansible_lsb['codename'] }} stable"
+        repo: "deb [arch={{ repo_arch }}] https://download.docker.com/linux/{{ lsb_base_id | lower }} {{ lsb_base_codename }} stable"
         state: present
 
-- name: Update apt
+- name: Update and upgrade apt packages
   when: ansible_facts['os_family'] == 'Debian'
   apt:
     update_cache: yes
@@ -39,7 +39,24 @@
     groups:
       - docker
     append: yes
-- name: Create general docker network
-  community.docker.docker_network:
-    name: docker_network
-    state: present
+
+- name: Prune everything (including non-dangling images)
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    images_filters:
+      dangling: false
+    networks: true
+    volumes: true
+    builder_cache: true
+
+- name: homeserver tasks
+  when: ansible_facts['hostname'] != "localhost"
+  block:
+    - name: Create general docker network
+      community.docker.docker_network:
+        name: docker_network
+        state: present
+        force: yes
+        ipam_config:
+          - subnet: 172.20.0.0/24
