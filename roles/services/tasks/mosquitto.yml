@@ -1,0 +1,69 @@
+- include_vars: mosquitto.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: "root"
+    group: "root"
+    mode: 0644
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}/config"
+      - "{{ docker_dir }}/{{ container_name }}/logs"
+      - "{{ docker_dir }}/{{ container_name }}/data"
+
+- name: Copy the config file
+  copy:
+    src: files/mosquitto.conf
+    dest: "{{ docker_dir }}/{{ container_name }}/config/mosquitto.conf"
+    decrypt: yes
+    owner: "root"
+    group: "root"
+    mode: 0644
+
+- name: Create empty user file
+  copy:
+    content: ""
+    dest: "{{ docker_dir }}/{{ container_name }}/config/mqttuser"
+    force: true
+    owner: "root"
+    group: "root"
+    mode: 0644
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "eclipse-mosquitto:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+    ports: "{{ host_port }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}/config:/mosquitto/config"
+      - "{{ docker_dir }}/{{ container_name }}/logs:/mosquitto/logs"
+      - "{{ docker_dir }}/{{ container_name }}/data:/mosquitto/data"
+    networks:
+      - name: docker_network
+    purge_networks: yes
+    restart_policy: always
+
+- name: Create users on {{ container_name }}
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    argv:
+      - mosquitto_passwd
+      - -b
+      - mqttuser
+      - "{{ item.username }}"
+      - "{{ item.password }}"
+    chdir: /mosquitto/config
+  with_items: "{{ users }}"
+
+- name: Restart {{ container_name }} container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    state: "started"
+    restart: true

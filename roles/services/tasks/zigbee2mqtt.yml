@@ -1,4 +1,4 @@
-- include_vars: homeassistant.yml
+- include_vars: zigbee2mqtt.yml
 
 - name: Create the directories
   file:
@@ -9,37 +9,32 @@
     group: "root"
     mode: 0644
   with_items:
-      - "{{ docker_dir }}/{{ container_name }}"
+      - "{{ docker_dir }}/{{ container_name }}/data"
 
 - name: Copy the config file
   copy:
-    src: files/homeassistant/
-    dest: "{{ docker_dir }}/{{ container_name }}/"
+    src: files/zigbee2mqtt/
+    dest: "{{ docker_dir }}/{{ container_name }}/data/"
     decrypt: yes
     owner: "root"
     group: "root"
     mode: 0644
 
-- name: Install hacs
-  shell: wget -O - https://get.hacs.xyz | bash -
-  args:
-    chdir: "{{ docker_dir }}/{{ container_name }}/"
-    executable: /bin/bash
-
-
 - name: Make sure the {{ container_name }} container is created and running
   community.docker.docker_container:
     name: "{{ container_name }}"
-    image: "homeassistant/home-assistant:latest"
+    image: "koenkk/zigbee2mqtt:latest"
     pull: yes
     state: "started"
     recreate: yes
     env:
       "TZ": "{{ timezone }}"
-      "DISABLE_JEMALLOC": "true"
-    exposed_ports:
-      - 8123
     volumes:
-      - "{{ docker_dir }}/{{ container_name }}:/config"
-    network_mode: "host"
+      - "{{ docker_dir }}/{{ container_name }}/data:/app/data"
+      - "/run/udev:/run/udev:ro"
+    devices:
+      - "/dev/serial/by-id/{{ zigbee_coordinator_id }}:/dev/ttyACM0"
+    networks:
+      - name: docker_network
+    purge_networks: yes
     restart_policy: always

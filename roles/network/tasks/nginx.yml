@@ -5,8 +5,8 @@
     state: directory
     path: "{{ item }}"
     recurse: yes
-    owner: root
-    group: root
+    owner: "root"
+    group: "root"
     mode: 0644
   with_items:
       - "{{ docker_dir }}/{{ container_name }}/data"

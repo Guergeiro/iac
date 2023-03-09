@@ -6,9 +6,9 @@ homeassistant:
     - type: homeassistant
     - type: trusted_networks
       trusted_networks:
-        - 192.168.16.0/24
         - 127.0.0.1
         - ::1
+        - 192.168.16.0/24 # Host network
         - 172.20.0.0/24 # Docker network ipam_config
 frontend:
   themes: !include_dir_merge_named themes
@@ -53,7 +53,13 @@ script: !include scripts.yaml
 input_number: !include input_number.yaml
 template: !include templates.yaml
 binary_sensor: !include binary_sensor.yaml
-sensor: !include sensors.yaml
+# sensor: !include sensors.yaml
 notify: !include notifications.yaml
 tts: !include tts.yaml
 wake_on_lan:
+panel_iframe:
+  zigbee2mqtt:
+    title: Zigbee2MQTT
+    icon: mdi:zigbee
+    url: https://zigbee2mqtt.brenosalles.com
+    require_admin: true

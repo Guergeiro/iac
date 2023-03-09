@@ -5,3 +5,5 @@ collections:
   - name: community.docker
 roles:
   - name: geerlingguy.security
+  - name: geerlingguy.ntp
+  - name: geerlingguy.docker

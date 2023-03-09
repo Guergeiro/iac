@@ -1,2 +1,12 @@
 - platform: ping
-  host: https://brenosalles.com
+  host: iPhone-de-Catia
+  scan_interval: 60
+  count: 2
+- platform: ping
+  host: Breno-s-Android
+  scan_interval: 60
+  count: 2
+- platform: ping
+  host: GalaxyWatch-187D
+  scan_interval: 60
+  count: 2

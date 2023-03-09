@@ -1,0 +1,7 @@
+- platform: ping
+  scan_interval: 60
+  count: 2
+  hosts:
+    iphone_de_catia: iPhone-de-Catia
+    breno_s_android: Breno-s-Android
+    breno_s_watch: GalaxyWatch-187D
