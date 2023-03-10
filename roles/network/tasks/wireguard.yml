@@ -34,3 +34,10 @@
       - name: docker_network
     purge_networks: yes
     restart_policy: always
+
+- name: Start {{ container_name }} at 5:00 AM
+  cron:
+    name: "Start {{ container_name }} at 5:00 AM"
+    minute: "0"
+    hour: "5"
+    job: "docker start {{ container_name }}"
