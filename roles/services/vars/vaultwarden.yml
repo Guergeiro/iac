@@ -1,5 +1,5 @@
 container_name: "vaultwarden"
-hostname_vaultward: "https://vaultwarden.{{ base_hostname }}"
+hostname_vaultwarden: "https://vaultwarden.{{ base_hostname }}"
 smtp_host: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           64663839356564343864373361303466366133313161333863323338663631623539366466666134

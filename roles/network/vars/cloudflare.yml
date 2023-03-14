@@ -15,4 +15,5 @@ domains:
   - "vaultwarden.{{ base_hostname }}"
   - "homeassistant.{{ base_hostname }}"
   - "zigbee2mqtt.{{ base_hostname }}"
+  - "archive.{{ base_hostname }}"
 cron: "@daily"

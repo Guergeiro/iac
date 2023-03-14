@@ -1,0 +1,59 @@
+- include_vars: paperless.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: "root"
+    group: "root"
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}/export"
+      - "{{ docker_dir }}/{{ container_name }}/consume"
+      - "{{ docker_dir }}/{{ container_name }}/media"
+      - "{{ docker_dir }}/{{ container_name }}/data"
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "ghcr.io/paperless-ngx/paperless-ngx:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+      "PAPERLESS_URL": "{{ hostname_paperless }}"
+
+      "PAPERLESS_SECRET_KEY": "{{ paperless_secret_key }}"
+      "USERMAP_UID": "0"
+      "USERMAP_GID": "0"
+
+      "PAPERLESS_DBHOST": "{{ paperless_dbhost }}"
+      "PAPERLESS_DBNAME": "{{ paperless_dbname }}"
+      "PAPERLESS_DBUSER": "{{ paperless_dbuser }}"
+      "PAPERLESS_DBPASS": "{{ paperless_dbpass }}"
+
+      "PAPERLESS_REDIS": "{{ paperless_redis }}"
+
+      "PAPERLESS_TIKA_ENABLED": "1"
+      "PAPERLESS_TIKA_GOTENBERG_ENDPOINT": "{{ paperless_tika_gotenberg_endpoint }}"
+      "PAPERLESS_TIKA_ENDPOINT": "{{ paperless_tika_endpoint }}"
+
+      "PAPERLESS_OCR_LANGUAGE": "eng+{{ paperless_extra_ocr_languages }}"
+      "PAPERLESS_OCR_LANGUAGES": "{{ paperless_extra_ocr_languages }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}/export:/usr/src/paperless/export"
+      - "{{ docker_dir }}/{{ container_name }}/consume:/usr/src/paperless/consume"
+      - "{{ docker_dir }}/{{ container_name }}/media:/usr/src/paperless/media"
+      - "{{ docker_dir }}/{{ container_name }}/data:/usr/src/paperless/data"
+    networks:
+      - name: docker_network
+    purge_networks: yes
+    restart_policy: always
+
+- name: Start {{ container_name }} at 5:00 AM
+  cron:
+    name: "Start {{ container_name }} at 5:00 AM"
+    minute: "0"
+    hour: "5"
+    job: "docker start {{ container_name }}"

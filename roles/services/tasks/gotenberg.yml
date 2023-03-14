@@ -1,0 +1,23 @@
+- include_vars: gotenberg.yml
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "gotenberg/gotenberg:7.8"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+    networks:
+      - name: docker_network
+    purge_networks: yes
+    restart_policy: always
+    command: "gotenberg --chromium-disable-javascript=true --chromium-allow-list=file:///tmp/.*"
+
+- name: Start {{ container_name }} at 5:00 AM
+  cron:
+    name: "Start {{ container_name }} at 5:00 AM"
+    minute: "0"
+    hour: "5"
+    job: "docker start {{ container_name }}"

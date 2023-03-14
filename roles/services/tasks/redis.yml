@@ -1,4 +1,4 @@
-- include_vars: zigbee2mqtt.yml
+- include_vars: redis.yml
 
 - name: Create the directories
   file:
@@ -10,28 +10,17 @@
   with_items:
       - "{{ docker_dir }}/{{ container_name }}/data"
 
-- name: Copy the config file
-  copy:
-    src: files/zigbee2mqtt/
-    dest: "{{ docker_dir }}/{{ container_name }}/data/"
-    decrypt: yes
-    owner: "root"
-    group: "root"
-
 - name: Make sure the {{ container_name }} container is created and running
   community.docker.docker_container:
     name: "{{ container_name }}"
-    image: "koenkk/zigbee2mqtt:latest"
+    image: "redis:7"
     pull: yes
     state: "started"
     recreate: yes
     env:
       "TZ": "{{ timezone }}"
     volumes:
-      - "{{ docker_dir }}/{{ container_name }}/data:/app/data"
-      - "/run/udev:/run/udev:ro"
-    devices:
-      - "/dev/serial/by-id/{{ zigbee_coordinator_id }}:/dev/ttyACM0"
+      - "{{ docker_dir }}/{{ container_name }}/data:/data"
     networks:
       - name: docker_network
     purge_networks: yes

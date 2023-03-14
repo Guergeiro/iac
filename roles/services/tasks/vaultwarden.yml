@@ -7,7 +7,6 @@
     recurse: yes
     owner: "root"
     group: "root"
-    mode: 0644
   with_items:
       - "{{ docker_dir }}/{{ container_name }}/data"
       - "{{ docker_dir }}/{{ container_name }}/rclone"
@@ -19,7 +18,6 @@
     decrypt: yes
     owner: "root"
     group: "root"
-    mode: 0644
 
 - name: Make sure the {{ container_name }} container is created and running
   community.docker.docker_container:
@@ -34,7 +32,7 @@
       "SIGNUPS_VERIFY": "true"
       "SIGNUPS_ALLOWED": "false"
       "DISABLE_ADMIN_TOKEN": "true"
-      "DOMAIN": "{{ hostname_vaultward }}"
+      "DOMAIN": "{{ hostname_vaultwarden }}"
       "SMTP_HOST": "{{ smtp_host }}"
       "SMTP_FROM": "{{ smtp_from }}"
       "SMTP_FROM_NAME": "{{ smtp_from_name }}"

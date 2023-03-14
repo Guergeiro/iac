@@ -1,1 +1,22 @@
 container_name: "paperless"
+
+hostname_paperless: "https://archive.{{ base_hostname }}"
+
+paperless_secret_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          32313132653935643136346638613630393031363331656433356338666232373932333661666438
+          6661353265633238353561336465616436316464316661390a303236386530303466376365306461
+          61373535373231626463306131313739643430373865353064313339656262373031613534343639
+          6530326662343363390a313833343230346661393131386336616665363061306333343565666438
+          65373835373465363636333538346239373536353733346331643364653530323839
+
+paperless_dbhost: "postgres"
+paperless_dbname: "paperless"
+paperless_dbuser: "postgres"
+paperless_dbpass: "postgres"
+
+paperless_redis: "redis://redis:6379"
+paperless_tika_gotenberg_endpoint: "http://gotenberg:3000"
+paperless_tika_endpoint: "http://tike:9998"
+
+paperless_extra_ocr_languages: "por"

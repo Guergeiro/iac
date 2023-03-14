@@ -7,3 +7,5 @@ extra_packages:
   - wget
   - unzip
   - zip
+  - python3
+  - python3-pip
