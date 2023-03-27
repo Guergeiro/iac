@@ -10,7 +10,6 @@
     decrypt: yes
     owner: root
     group: root
-    mode: 0644
   notify: restart endlessh
 
 - name: Add the net_bind_capability to the executable (for running on port 22)

@@ -17,7 +17,6 @@
     decrypt: yes
     owner: "root"
     group: "root"
-    mode: 0644
 
 - name: Install hacs
   shell: wget -O - https://get.hacs.xyz | bash -

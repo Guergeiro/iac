@@ -27,6 +27,8 @@
       "WG_HOST": "{{ hostname_vpn }}"
       "TZ": "{{ timezone }}"
       "WG_POST_UP": "{{ post_up }}"
+      "WG_PRE_DOWN": "{{ pre_down }}"
+    ports: "{{ host_port }}"
     volumes:
       - "{{ docker_dir }}/{{ container_name }}:/etc/wireguard"
     networks:
