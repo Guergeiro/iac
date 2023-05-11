@@ -1,45 +1,3 @@
-- include_tasks: arch.yml
-
-- name: Include OS-specific variables
-  include_vars: "{{ lsb_base_id }}.yml"
-
-- name: Install dependencies
-  package:
-    state: present
-    name: "{{ docker_deps }}"
-
-- name: Install Docker (Ubuntu)
-  when: lsb_base_id == 'Ubuntu'
-  block:
-    - name: Add Docker GPG apt Key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker Repository
-      apt_repository:
-        repo: "deb [arch={{ repo_arch }}] https://download.docker.com/linux/{{ lsb_base_id | lower }} {{ lsb_base_codename }} stable"
-        state: present
-
-- name: Update and upgrade apt packages
-  when: ansible_facts['os_family'] == 'Debian'
-  apt:
-    update_cache: yes
-    name: "{{ docker_packages }}"
-    state: present
-
-- name: Ensure group docker exists
-  group:
-    name: docker
-    state: present
-
-- name: Add user "{{ username }}" to group docker
-  user:
-    name: "{{ username }}"
-    groups:
-      - docker
-    append: yes
-
 - name: Prune everything (including non-dangling images)
   community.docker.docker_prune:
     containers: true
@@ -60,3 +18,9 @@
         force: yes
         ipam_config:
           - subnet: 172.20.0.0/24
+    - name: Stop all containers every day at 4:00 AM
+      cron:
+        name: "Stop all containers every day at 4:00 AM"
+        minute: "0"
+        hour: "4"
+        job: "docker stop $(docker container ls -q)"
