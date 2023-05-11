@@ -6,3 +6,4 @@ postgres_password: "postgres"
 databases:
   - homeassistant
   - paperless
+  - vaultwarden

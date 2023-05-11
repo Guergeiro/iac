@@ -1,7 +1,5 @@
 extra_packages:
-  - git
   - python3
-  - python3-pip
   - default-jdk-headless
   - bat
   - ripgrep

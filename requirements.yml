@@ -8,3 +8,5 @@ roles:
   - name: geerlingguy.security
   - name: geerlingguy.ntp
   - name: geerlingguy.docker
+  - name: geerlingguy.git
+  - name: geerlingguy.pip

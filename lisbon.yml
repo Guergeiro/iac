@@ -11,6 +11,8 @@
     - role: docker
     - role: geerlingguy.security
     - role: geerlingguy.ntp
+    - role: geerlingguy.git
+    - role: geerlingguy.pip
     - role: security
     - role: network
     - role: services

@@ -8,4 +8,3 @@ extra_packages:
   - unzip
   - zip
   - python3
-  - python3-pip
