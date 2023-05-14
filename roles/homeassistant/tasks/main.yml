@@ -1,0 +1,3 @@
+- include_tasks: homeassistant.yml
+- include_tasks: mosquitto.yml
+- include_tasks: zigbee2mqtt.yml

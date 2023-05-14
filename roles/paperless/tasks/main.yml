@@ -1,0 +1,4 @@
+- include_tasks: redis.yml
+- include_tasks: tika.yml
+- include_tasks: gotenberg.yml
+- include_tasks: paperless.yml

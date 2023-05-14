@@ -17,6 +17,6 @@ paperless_dbpass: "postgres"
 
 paperless_redis: "redis://redis:6379"
 paperless_tika_gotenberg_endpoint: "http://gotenberg:3000"
-paperless_tika_endpoint: "http://tike:9998"
+paperless_tika_endpoint: "http://tika:9998"
 
 paperless_extra_ocr_languages: "por"

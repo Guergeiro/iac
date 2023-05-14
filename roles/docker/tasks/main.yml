@@ -18,9 +18,9 @@
         force: yes
         ipam_config:
           - subnet: 172.20.0.0/24
-    - name: Stop all containers every day at 4:00 AM
+    - name: Stop all containers every day at 4:30 AM
       cron:
-        name: "Stop all containers every day at 4:00 AM"
-        minute: "0"
+        name: "Stop all containers every day at 4:30 AM"
+        minute: "30"
         hour: "4"
         job: "docker stop $(docker container ls -q)"

@@ -15,5 +15,10 @@
     - role: geerlingguy.docker
     - role: docker
     - role: security
-    - role: network
-    - role: services
+    - role: cloudflare
+    - role: nginx
+    - role: wireguard
+    - role: postgres
+    - role: vaultwarden
+    - role: paperless
+    - role: homeassistant

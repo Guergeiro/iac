@@ -24,7 +24,6 @@
     chdir: "{{ docker_dir }}/{{ container_name }}/"
     executable: /bin/bash
 
-
 - name: Make sure the {{ container_name }} container is created and running
   community.docker.docker_container:
     name: "{{ container_name }}"
