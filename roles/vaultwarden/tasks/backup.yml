@@ -1,0 +1,52 @@
+- include_vars: backup.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: "root"
+    group: "root"
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}/rclone"
+
+- name: Copy the config file
+  copy:
+    src: files/vaultwarden.conf
+    dest: "{{ docker_dir }}/{{ container_name }}/rclone/rclone.conf"
+    decrypt: yes
+    owner: "root"
+    group: "root"
+
+- name: Make sure the {{ container_name }}-backup container is created
+  community.docker.docker_container:
+    name: "{{ container_name }}-backup"
+    image: "guergeiro/iac-backup:latest"
+    pull: yes
+    state: "present"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+      "PG_HOST": "{{ vaultwarden_backup_dbhost }}"
+      "PG_DBNAME": "{{ vaultwarden_backup_dbname }}"
+      "PG_USERNAME": "{{ vaultwarden_backup_dbuser }}"
+      "PG_PASSWORD": "{{ vaultwarden_backup_dbpass }}"
+      "ZIP_PASSWORD": "{{ zip_password }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}/rclone:/.config/rclone"
+      - "{{ docker_dir }}/{{ container_name }}/data/attachments:/attachments"
+      - "{{ docker_dir }}/{{ container_name }}/data/sends:/sends"
+      - "{{ docker_dir }}/{{ container_name }}/data/rsa_key.pem:/keys/rsa_key.pem"
+      - "{{ docker_dir }}/{{ container_name }}/data/rsa_key.pub.pem:/keys/rsa_key.pub.pem"
+    networks:
+      - name: docker_network
+    purge_networks: yes
+    restart_policy: "on-failure"
+    command: "vaultwarden"
+
+- name: Backup {{ container_name }} at 4:30 AM
+  cron:
+    name: "Backup {{ container_name }} at 4:30 AM"
+    minute: "30"
+    hour: "4"
+    job: "docker start {{ container_name }}-backup"

@@ -41,13 +41,6 @@
     login_password: "{{ postgres_password }}"
   with_items: "{{ databases }}"
 
-- name: Backup {{ container_name }} at 4:00 AM
-  cron:
-    name: "Backup {{ container_name }} at 4:00 AM"
-    minute: "0"
-    hour: "4"
-    job: "docker exec -e PGPASSWORD=${{ postgres_password }} -t ${{ container_name }} pg_dumpall -c -U ${{ postgres_user }} > {{ docker_dir }}/{{ container_name }}/dump.sql"
-
 - name: Start {{ container_name }} at 5:00 AM
   cron:
     name: "Start {{ container_name }} at 5:00 AM"

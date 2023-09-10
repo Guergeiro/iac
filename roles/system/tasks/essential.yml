@@ -39,9 +39,9 @@
       hostname:
         name: "{{ inventory_hostname }}"
 
-    - name: Reboot every day at 4:30 AM
+    - name: Reboot every day at 4:50 AM
       cron:
-        name: "Reboot every day at 4:30 AM"
-        minute: "30"
+        name: "Reboot every day at 4:50 AM"
+        minute: "50"
         hour: "4"
         job: "/sbin/reboot"

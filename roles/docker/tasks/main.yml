@@ -25,28 +25,3 @@
         minute: "40"
         hour: "4"
         job: "docker stop $(docker container ls -q)"
-
-    - name: Create tmp directory
-      file:
-        state: directory
-        path: /tmp/backup
-        recurse: yes
-        owner: "root"
-        group: "root"
-
-    - name: Copy backup scripts
-      copy:
-        src: ../../.scripts/backup/
-        dest: "/tmp/backup/"
-        decrypt: yes
-        owner: "root"
-        group: "root"
-
-    - name: Create backup image
-      community.docker.docker_image:
-        name: backup
-        build:
-          path: /tmp/backup/
-          pull: true
-        source: "build"
-        force_tag: true

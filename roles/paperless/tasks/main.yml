@@ -2,3 +2,4 @@
 - include_tasks: tika.yml
 - include_tasks: gotenberg.yml
 - include_tasks: paperless.yml
+- include_tasks: backup.yml
