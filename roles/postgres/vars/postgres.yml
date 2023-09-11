@@ -7,3 +7,4 @@ databases:
   - homeassistant
   - paperless
   - vaultwarden
+  - freshrss

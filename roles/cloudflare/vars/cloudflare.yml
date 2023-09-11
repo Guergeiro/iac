@@ -16,4 +16,5 @@ domains:
   - "homeassistant.{{ base_hostname }}"
   - "zigbee2mqtt.{{ base_hostname }}"
   - "archive.{{ base_hostname }}"
+  - "rss.{{ base_hostname }}"
 cron: "@daily"

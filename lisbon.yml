@@ -22,3 +22,4 @@
     - role: vaultwarden
     - role: paperless
     - role: homeassistant
+    - role: freshrss

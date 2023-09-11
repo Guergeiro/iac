@@ -1,0 +1,38 @@
+- include_vars: freshrss.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: "root"
+    group: "root"
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}/data"
+      - "{{ docker_dir }}/{{ container_name }}/extensions"
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "freshrss/freshrss:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+      "CRON_MIN": "0,15,30,45"
+      "LISTEN": "0.0.0.0:8080"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}/data:/var/www/FreshRSS/data"
+      - "{{ docker_dir }}/{{ container_name }}/extensions:/var/www/FreshRSS/extensions"
+    networks:
+      - name: docker_network
+    purge_networks: yes
+    restart_policy: always
+
+- name: Start {{ container_name }} at 5:00 AM
+  cron:
+    name: "Start {{ container_name }} at 5:00 AM"
+    minute: "0"
+    hour: "5"
+    job: "docker start {{ container_name }}"
