@@ -10,6 +10,41 @@
   with_items:
       - "{{ docker_dir }}/{{ container_name }}/data"
       - "{{ docker_dir }}/{{ container_name }}/extensions"
+      - "{{ docker_dir }}/{{ container_name }}/git-extensions"
+
+- name: Clone repositories
+  git:
+    repo: "{{ item.url }}"
+    dest: "{{ item.directory }}"
+    single_branch: yes
+  with_items:
+    - {
+        directory: "{{ docker_dir }}/{{ container_name }}/git-extensions/Extensions",
+        url: "https://github.com/FreshRSS/Extensions.git",
+      }
+    - {
+        directory: "{{ docker_dir }}/{{ container_name }}/git-extensions/RedditImage",
+        url: "https://github.com/aledeg/xExtension-RedditImage.git",
+      }
+    - {
+        directory: "{{ docker_dir }}/{{ container_name }}/git-extensions/RedditSub",
+        url: "https://github.com/balthisar/xExtension-RedditSub.git",
+      }
+    - {
+        directory: "{{ docker_dir }}/{{ container_name }}/git-extensions/AutoTheme",
+        url: "https://github.com/aidistan/freshrss-extensions.git",
+      }
+
+- name: Copy selected extensions
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ docker_dir }}/{{ container_name }}/extensions/"
+    remote_src: true
+  with_items:
+    - "{{ docker_dir }}/{{ container_name }}/git-extensions/Extensions/xExtension-ReadingTime"
+    - "{{ docker_dir }}/{{ container_name }}/git-extensions/RedditImage"
+    - "{{ docker_dir }}/{{ container_name }}/git-extensions/RedditSub"
+    - "{{ docker_dir }}/{{ container_name }}/git-extensions/AutoTheme/xExtension-ThemeModeSynchronizer"
 
 - name: Make sure the {{ container_name }} container is created and running
   community.docker.docker_container:
