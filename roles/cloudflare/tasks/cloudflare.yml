@@ -10,9 +10,9 @@
     env:
       "TZ": "{{ timezone }}"
       "CF_API_TOKEN": "{{ cloudflare_dns_token }}"
-      "PROXIED": "true"
-      "DOMAINS": "{{ ','.join(domains) }}"
-      "UPDATE_CRON": "{{ cron }}"
+      "PROXIED": "is({{ domains | selectattr('proxy', 'equalto', 'true') | map(attribute='domain') | join(',') }})"
+      "DOMAINS": "{{ domains | map(attribute='domain') | join(',') }}"
+      "DELETE_ON_STOP": "true"
     network_mode: "host"
     restart_policy: always
 

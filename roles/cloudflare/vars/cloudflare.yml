@@ -8,13 +8,39 @@ cloudflare_dns_token: !vault |
           30323332643035613262356563383434316334643261333734323035643135666364623066326265
           6139626463363464616436653664373530313133363030333832
 domains:
-  - "vpn.{{ base_hostname }}"
-  - "lisbon.{{ base_hostname }}"
-  - "wireguard.{{ base_hostname }}"
-  - "webmail.{{ base_hostname }}"
-  - "vaultwarden.{{ base_hostname }}"
-  - "homeassistant.{{ base_hostname }}"
-  - "zigbee2mqtt.{{ base_hostname }}"
-  - "archive.{{ base_hostname }}"
-  - "rss.{{ base_hostname }}"
-cron: "@daily"
+  - {
+      proxy: "false",
+      domain: "vpn.{{ base_hostname }}"
+    }
+  - {
+      proxy: "false",
+      domain: "ssh.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "lisbon.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "wireguard.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "vaultwarden.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "homeassistant.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "zigbee2mqtt.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "archive.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "rss.{{ base_hostname }}"
+    }
