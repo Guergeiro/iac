@@ -41,6 +41,7 @@
 
       "PAPERLESS_OCR_LANGUAGE": "eng+{{ paperless_extra_ocr_languages }}"
       "PAPERLESS_OCR_LANGUAGES": "{{ paperless_extra_ocr_languages }}"
+      "PAPERLESS_OCR_USER_ARGS": "{\"invalidate_digital_signatures\": true}"
     volumes:
       - "{{ docker_dir }}/{{ container_name }}/export:/usr/src/paperless/export"
       - "{{ docker_dir }}/{{ container_name }}/consume:/usr/src/paperless/consume"
