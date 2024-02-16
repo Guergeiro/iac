@@ -54,9 +54,9 @@ scene: !include scenes.yaml
 script: !include scripts.yaml
 input_number: !include input_number.yaml
 template: !include templates.yaml
-binary_sensor: !include binary_sensor.yaml
 counter: !include counter.yaml
-# sensor: !include sensors.yaml
+camera: !include cameras.yaml
+sensor: !include sensors.yaml
 notify: !include notifications.yaml
 tts: !include tts.yaml
 wake_on_lan:

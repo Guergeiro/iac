@@ -1,26 +1,6 @@
 - sensor:
-    name: Water Custom Sensor
-    unit_of_measurement: "m³"
-    state_class: total_increasing
-    device_class: water
-    state: "{{ states('input_number.water_meter_reading')|float }}"
-
-- sensor:
     name: Gas Custom Sensor
     unit_of_measurement: "m³"
     state_class: total_increasing
     device_class: gas
     state: "{{ states('input_number.gas_meter_reading')|float }}"
-
-- sensor:
-    name: Electricty Custom Sensor
-    unit_of_measurement: kWh
-    state_class: total_increasing
-    device_class: energy
-    state: "{{ (states('input_number.electricty_cheia_meter_reading')|int) + (states('input_number.electricty_ponta_meter_reading')|int) + (states('input_number.electricty_vazio_meter_reading')|int) }}"
-
-- sensor:
-    contador_impulsos_agua_reais:
-      friendly_name: Contador de impuslsos de água reais
-      value_template: >-
-        {{ 'unknown' if states('counter.contador_impulsos_agua') == 'unknown' else ((states('counter.contador_impulsos_agua')|int / 2)|round(0, "floor")) }}

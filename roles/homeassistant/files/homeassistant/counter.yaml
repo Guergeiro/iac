@@ -1,6 +1,0 @@
-contador_impulsos_gas:
-  initial: 0
-  step: 1
-contador_impulsos_agua:
-  initial: 0
-  step: 1
