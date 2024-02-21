@@ -1,0 +1,83 @@
+- include_vars: tmux.yml
+
+- name: Create the directory
+  become_user: "{{ username }}"
+  file:
+    state: directory
+    path: "{{ clone_directory }}"
+    recurse: yes
+
+- name: Install annoyingly unpackaged python module requirement
+  pip:
+    name: github3.py
+    state: present
+
+- name: Find latest release
+  community.general.github_release:
+    user: "tmux"
+    repo: "tmux"
+    action: latest_release
+  register: release_data
+
+- name: Remove annoyingly unpackaged python module requirement
+  pip:
+    name: github3.py
+    state: absent
+
+- name: Clone repository
+  become_user: "{{ username }}"
+  git:
+    repo: "https://github.com/tmux/tmux.git"
+    dest: "{{ clone_directory }}"
+    version: "{{ release_data.tag }}"
+
+- name: Install required packages
+  package:
+    name:
+      - libevent-dev
+      - ncurses-dev
+      - build-essential
+      - bison
+      - pkg-config
+    state: present
+
+- name: Remove old version of tmux
+  package:
+    name: tmux
+    state: absent
+
+- name: Remove old binary
+  become_user: "{{ username }}"
+  file:
+    path: "$TMUX_HOME"
+    state: absent
+
+- name: Create folders
+  become_user: "{{ username }}"
+  file:
+    path: "$TMUX_HOME"
+    state: directory
+    recurse: yes
+
+- name: Autogen
+  become_user: "{{ username }}"
+  command: ./autogen.sh
+  args:
+    chdir: "{{ clone_directory }}"
+
+- name: Configure
+  become_user: "{{ username }}"
+  command: "./configure --prefix=$TMUX_HOME"
+  args:
+    chdir: "{{ clone_directory }}"
+
+- name: Make
+  become_user: "{{ username }}"
+  command: make
+  args:
+    chdir: "{{ clone_directory }}"
+
+- name: Install
+  command: make install
+  args:
+    chdir: "{{ clone_directory }}"
