@@ -1,0 +1,31 @@
+- name: Install required packages
+  package:
+    name:
+      - cmake
+      - pkg-config
+      - libfreetype6-dev
+      - libfontconfig1-dev
+      - libxcb-xfixes0-dev
+      - libxkbcommon-dev
+      - python3
+    state: present
+
+- name: Remove old binary
+  become_user: "{{ username }}"
+  file:
+    path: "$ALACRITTY_HOME"
+    state: absent
+
+- name: Create folders
+  become_user: "{{ username }}"
+  file:
+    path: "$ALACRITTY_HOME"
+    state: directory
+    recurse: yes
+
+- name: Install alacritty
+  become_user: "{{ username }}"
+  community.general.cargo:
+    name: alacritty
+    state: latest
+    path: "$ALACRITTY_HOME"
