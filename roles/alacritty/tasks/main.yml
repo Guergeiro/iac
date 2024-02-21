@@ -10,18 +10,27 @@
       - python3
     state: present
 
-- name: Remove old binary
+- name: check if alacritty is installed
+  command: alacritty --version
+  register: alacritty_exists
   become_user: "{{ username }}"
-  file:
-    path: "$ALACRITTY_HOME"
-    state: absent
+  ignore_errors: yes
 
-- name: Create folders
-  become_user: "{{ username }}"
-  file:
-    path: "$ALACRITTY_HOME"
-    state: directory
-    recurse: yes
+- name: Prepare folders
+  when: alacritty_exists is failed
+  block:
+    - name: Remove old binary
+      become_user: "{{ username }}"
+      file:
+        path: "$ALACRITTY_HOME"
+        state: absent
+
+    - name: Create folders
+      become_user: "{{ username }}"
+      file:
+        path: "$ALACRITTY_HOME"
+        state: directory
+        recurse: yes
 
 - name: Install alacritty
   become_user: "{{ username }}"
@@ -29,3 +38,26 @@
     name: alacritty
     state: latest
     path: "$ALACRITTY_HOME"
+
+- name: Create the directory
+  become_user: "{{ username }}"
+  file:
+    state: directory
+    path: "{{ item.directory }}"
+    recurse: yes
+  with_items:
+    - {
+        directory: "{{ base_directory}}/dracula/alacritty",
+        url: "https://github.com/dracula/alacritty.git",
+      }
+
+- name: Clone repository
+  become_user: "{{ username }}"
+  git:
+    repo: "{{ item.url }}"
+    dest: "{{ item.directory }}"
+  with_items:
+    - {
+        directory: "{{ base_directory}}/dracula/alacritty",
+        url: "https://github.com/dracula/alacritty.git",
+      }
