@@ -43,21 +43,30 @@
   become_user: "{{ username }}"
   file:
     state: directory
-    path: "{{ item.directory }}"
+    path: "{{ item }}"
     recurse: yes
   with_items:
-    - {
-        directory: "{{ base_directory}}/dracula/alacritty",
-        url: "https://github.com/dracula/alacritty.git",
-      }
+    - "{{ base_directory}}/dracula/alacritty"
+    - "{{ base_directory}}/ryanoasis/nerd-fonts"
 
 - name: Clone repository
   become_user: "{{ username }}"
   git:
     repo: "{{ item.url }}"
     dest: "{{ item.directory }}"
+    depth: 1
   with_items:
     - {
         directory: "{{ base_directory}}/dracula/alacritty",
         url: "https://github.com/dracula/alacritty.git",
       }
+    - {
+        directory: "{{ base_directory}}/ryanoasis/nerd-fonts",
+        url: "https://github.com/ryanoasis/nerd-fonts.git",
+      }
+
+- name: Install fonts
+  command: ./install.sh
+  become_user: "{{ username }}"
+  args:
+    chdir: "{{ base_directory}}/ryanoasis/nerd-fonts"
