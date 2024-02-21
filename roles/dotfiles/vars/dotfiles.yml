@@ -1,0 +1,13 @@
+clone_directory: "{{ base_directory}}/guergeiro/dotfiles"
+
+stow_directories:
+  - alacritty
+  - bash
+  - docker
+  - git
+  - npm
+  - readline
+  - starship
+  - tmux
+  - vim
+  - X11

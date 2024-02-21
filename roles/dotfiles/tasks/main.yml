@@ -1,55 +1,39 @@
-- name: Install dotfiles
-  block:
-    - name: Create the directories
-      file:
-        state: directory
-        path: "{{ base_directory }}/{{ item }}"
-        recurse: yes
-      with_items:
-        - "guergeiro/dotfiles"
-        - "vim/vim"
-        - "srcery-colors/srcery-terminal"
-        - "alacritty/alacritty"
-        - "tmux/tmux"
-        - "futpib/pagraphcontrol"
-        - "ryanoasis/nerd-fonts"
-        - "keeferrourke/capitaine-cursors"
-    - name: Clone repositories
-      git:
-        repo: "{{ item.url }}"
-        dest: "{{ item.directory }}"
-        single_branch: yes
-        version: master
-      with_items:
-        - {
-            directory: "{{ base_directory}}/guergeiro/dotfiles",
-            url: "https://github.com/guergeiro/dotfiles.git",
-          }
-        - {
-            directory: "{{ base_directory}}/vim/vim",
-            url: "https://github.com/vim/vim.git",
-          }
-        - {
-            directory: "{{ base_directory}}/srcery-colors/srcery-terminal",
-            url: "https://github.com/srcery-colors/srcery-terminal.git",
-          }
-        - {
-            directory: "{{ base_directory}}/alacritty/alacritty",
-            url: "https://github.com/alacritty/alacritty.git",
-          }
-        - {
-            directory: "{{ base_directory}}/tmux/tmux",
-            url: "https://github.com/tmux/tmux.git",
-          }
-        - {
-            directory: "{{ base_directory}}/futpib/pagraphcontrol",
-            url: "https://github.com/futpib/pagraphcontrol.git",
-          }
-        - {
-            directory: "{{ base_directory}}/ryanoasis/nerd-fonts",
-            url: "https://github.com/ryanoasis/nerd-fonts.git",
-          }
-        - {
-            directory: "{{ base_directory}}/keeferrourke/capitaine-cursors",
-            url: "https://github.com/keeferrourke/capitaine-cursors.git",
-          }
+- include_vars: dotfiles.yml
+
+- name: Create the directory
+  become_user: "{{ username }}"
+  file:
+    state: directory
+    path: "{{ clone_directory }}"
+    recurse: yes
+
+- name: Clone repository
+  become_user: "{{ username }}"
+  git:
+    repo: "git@github.com:Guergeiro/dotfiles.git"
+    dest: "{{ clone_directory }}"
+
+- name: Install stow
+  package:
+    name: "stow"
+    state: present
+
+- name: Undo stow
+  command: "stow --target $HOME --delete {{ item }}"
+  become_user: "{{ username }}"
+  args:
+    chdir: "{{ base_directory }}/guergeiro/dotfiles"
+  with_items: "{{ stow_directories }}"
+
+- name: Remove default .bashrc
+  become_user: "{{ username }}"
+  file:
+    path: "$HOME/.bashrc"
+    state: absent
+
+- name: Run stow
+  command: "stow --target $HOME --stow {{ item }}"
+  become_user: "{{ username }}"
+  args:
+    chdir: "{{ base_directory }}/guergeiro/dotfiles"
+  with_items: "{{ stow_directories }}"
