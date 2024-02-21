@@ -1,0 +1,43 @@
+- name: check if deno is installed
+  command: deno --version
+  register: deno_exists
+  become_user: "{{ username }}"
+  ignore_errors: yes
+
+- name: Install Deno
+  when: deno_exists is failed
+  block:
+    - name: Install required packages
+      package:
+        name:
+          - unzip
+        state: present
+
+    - name: Remove old binary
+      become_user: "{{ username }}"
+      file:
+        path: "$DENO_INSTALL"
+        state: absent
+
+    - name: Create folders
+      become_user: "{{ username }}"
+      file:
+        path: "$DENO_INSTALL"
+        state: directory
+        recurse: yes
+
+    - name: Download Installer
+      get_url:
+        url: https://deno.land/x/install/install.sh
+        owner: "{{ username }}"
+        mode: "u+rx"
+        dest: /tmp/deno.sh
+
+    - name: Run Installer
+      become_user: "{{ username }}"
+      command: /tmp/deno.sh
+
+- name: Update Deno
+  when: deno_exists is successful
+  become_user: "{{ username }}"
+  command: deno upgrade

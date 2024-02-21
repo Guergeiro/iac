@@ -1,5 +1,5 @@
 - name: check if cargo is installed
-  command: cargo -v
+  command: cargo --version
   register: cargo_exists
   become_user: "{{ username }}"
   ignore_errors: yes
@@ -7,13 +7,35 @@
 - name: Install Rust
   when: cargo_exists is failed
   block:
+    - name: Remove old binary
+      become_user: "{{ username }}"
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "$RUSTUP_HOME"
+        - "$CARGO_HOME"
+
+    - name: Create folders
+      become_user: "{{ username }}"
+      file:
+        path: "{{ item }}"
+        state: directory
+        recurse: yes
+      with_items:
+        - "$RUSTUP_HOME"
+        - "$CARGO_HOME"
+
     - name: Download Installer
       get_url:
         url: https://sh.rustup.rs
+        owner: "{{ username }}"
+        mode: "u+rx"
         dest: /tmp/rustup.sh
 
     - name: Run Installer
-      command: sudo sh /tmp/rustup.sh --no-modify-path -y
+      become_user: "{{ username }}"
+      command: /tmp/rustup.sh --no-modify-path -y
 
 - name: Update Rust
   when: cargo_exists is successful
