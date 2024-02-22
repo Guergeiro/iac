@@ -1,32 +1,8 @@
 extra_packages:
-  - python3
-  - default-jdk-headless
   - bat
   - ripgrep
   - trash-cli
   - xclip
-  - suckless-tools
-  - stow
-  # Required because of vim
-  - libncurses5-dev
-  - libgtk2.0-dev
-  - libatk1.0-dev
-  - libcairo2-dev
-  - libx11-dev
-  - libxpm-dev
-  - libxt-dev
-  - python2-dev
-  - python3-dev
-  - ruby-dev
-  - lua5.2
-  - liblua5.2-dev
-  - libperl-dev
-  - libevent-dev
-  - ncurses-dev
-  - build-essential
-  - bison
-  - cmake
-  - pkg-config
-  - libfreetype6-dev
-  - libfontconfig1-dev
-  - libxcb-xfixes0-dev
+  - unzip
+  - zip
+  - python3

@@ -11,6 +11,12 @@
     state: directory
     recurse: yes
 
+- name: Install required packages
+  package:
+    name:
+      - python3-neovim
+    state: present
+
 - name: Download binary
   become_user: "{{ username }}"
   unarchive:

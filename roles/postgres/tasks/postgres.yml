@@ -30,7 +30,7 @@
     user: "root:root"
 
 - name: Install psycopg2-binary
-  ansible.builtin.pip:
+  pip:
     name: psycopg2-binary
 
 - name: Create databases

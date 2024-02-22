@@ -55,7 +55,7 @@
 - name: Create folders
   become_user: "{{ username }}"
   file:
-    path: "$TMUX_HOME"
+    path: "$TMUX_HOME/bin"
     state: directory
     recurse: yes
 
@@ -78,6 +78,8 @@
     chdir: "{{ clone_directory }}"
 
 - name: Install
-  command: make install
-  args:
-    chdir: "{{ clone_directory }}"
+  become_user: "{{ username }}"
+  copy:
+    src: "{{ clone_directory }}/tmux"
+    mode: "u+rx"
+    dest: "$TMUX_HOME/bin/tmux"

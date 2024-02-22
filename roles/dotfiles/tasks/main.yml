@@ -9,6 +9,7 @@
 
 - name: Clone repository
   become_user: "{{ username }}"
+  ignore_errors: yes # if repo is not clean, sometimes I wait to commit changes
   git:
     repo: "git@github.com:Guergeiro/dotfiles.git"
     dest: "{{ clone_directory }}"
