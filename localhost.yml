@@ -13,6 +13,7 @@
     - role: tmux
     - role: rust
     - role: deno
+    - role: pnpm
     - role: alacritty
     - role: prompt
     - role: neovim

@@ -1,0 +1,23 @@
+- name: Remove old binary
+  become_user: "{{ username }}"
+  file:
+    path: "$PNPM_HOME"
+    state: absent
+
+- name: Create folders
+  become_user: "{{ username }}"
+  file:
+    path: "$PNPM_HOME"
+    state: directory
+    recurse: yes
+
+- name: Download Installer
+  get_url:
+    url: https://get.pnpm.io/install.sh
+    owner: "{{ username }}"
+    mode: "u+rx"
+    dest: /tmp/pnpm.sh
+
+- name: Run Installer
+  become_user: "{{ username }}"
+  command: /tmp/pnpm.sh
