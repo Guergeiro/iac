@@ -26,6 +26,15 @@
 
 - name: Install fonts
   block:
+    - name: Create directories
+      become_user: "{{ username }}"
+      file:
+        state: directory
+        path: "{{ item }}"
+        recurse: yes
+      with_items:
+        - "{{ base_directory}}/ryanoasis/nerd-fonts"
+
     - name: Clone repository
       become_user: "{{ username }}"
       git:

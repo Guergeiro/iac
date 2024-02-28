@@ -9,5 +9,7 @@ stow_directories:
   - readline
   - starship
   - tmux
+  - python
   - vim
   - X11
+  - xfce

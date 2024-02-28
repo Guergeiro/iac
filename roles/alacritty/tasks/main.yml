@@ -51,11 +51,11 @@
 - name: Clone repositories
   become_user: "{{ username }}"
   git:
-    repo: "{{ item.url }}"
-    dest: "{{ item.directory }}"
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
     depth: 1
   with_items:
     - {
-        directory: "{{ base_directory}}/dracula/alacritty",
-        url: "https://github.com/dracula/alacritty.git",
+        dest: "{{ base_directory}}/dracula/alacritty",
+        repo: "https://github.com/dracula/alacritty.git",
       }

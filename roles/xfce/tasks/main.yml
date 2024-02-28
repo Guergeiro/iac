@@ -1,0 +1,54 @@
+- name: Install xfce
+  package:
+    name:
+      - xfce4 # This installs core modules and applications
+      - xfce4-battery-plugin
+      - xfce4-datetime-plugin
+      # - xfce4-docklike-plugin
+      - xfce4-places-plugin
+      - xfce4-pulseaudio-plugin
+      - xfce4-sensors-plugin
+      - xfce4-time-out-plugin
+      - xfce4-whiskermenu-plugin
+      - xfce4-xkb-plugin
+    state: present
+
+- name: Create directories
+  become_user: "{{ username }}"
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+  with_items:
+    - "$XDG_DATA_HOME/themes"
+    - "$XDG_DATA_HOME/icons"
+    - "{{ base_directory}}/dracula/gtk"
+    - "{{ base_directory}}/dracula/icons"
+
+- name: Clone repositories
+  become_user: "{{ username }}"
+  git:
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - {
+        dest: "{{ base_directory}}/dracula/gtk",
+        repo: "https://github.com/dracula/gtk.git",
+      }
+    - {
+        dest: "{{ base_directory}}/dracula/icons",
+        repo: "https://github.com/vinceliuice/Tela-circle-icon-theme.git",
+      }
+
+- name: Install theme
+  become_user: "{{ username }}"
+  file:
+    src: "{{ base_directory}}/dracula/gtk"
+    dest: "$XDG_DATA_HOME/themes/Dracula"
+    state: link
+
+- name: Install icons
+  command: ./install.sh -c dracula
+  become_user: "{{ username }}"
+  args:
+    chdir: "{{ base_directory}}/dracula/icons"
