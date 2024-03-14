@@ -12,4 +12,4 @@ stow_directories:
   - python
   - vim
   - X11
-  - xfce
+  # - xfce

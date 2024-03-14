@@ -1,43 +1,46 @@
-- name: Install required packages
-  package:
-    name:
-      - cmake
-      - pkg-config
-      - libfreetype6-dev
-      - libfontconfig1-dev
-      - libxcb-xfixes0-dev
-      - libxkbcommon-dev
-      - python3
-    state: present
-
-- name: check if alacritty is installed
-  command: alacritty --version
-  register: alacritty_exists
-  become_user: "{{ username }}"
-  ignore_errors: yes
-
-- name: Prepare folders
-  when: alacritty_exists is failed
+- name: Build alacritty
+  when: ansible_facts['system_vendor'] != "Microsoft Corporation"
   block:
-    - name: Remove old binary
-      become_user: "{{ username }}"
-      file:
-        path: "$ALACRITTY_HOME"
-        state: absent
+    - name: Install required packages
+      package:
+        name:
+          - cmake
+          - pkg-config
+          - libfreetype6-dev
+          - libfontconfig1-dev
+          - libxcb-xfixes0-dev
+          - libxkbcommon-dev
+          - python3
+        state: present
 
-    - name: Create folders
+    - name: check if alacritty is installed
+      command: alacritty --version
+      register: alacritty_exists
       become_user: "{{ username }}"
-      file:
-        path: "$ALACRITTY_HOME"
-        state: directory
-        recurse: yes
+      ignore_errors: yes
 
-- name: Install alacritty
-  become_user: "{{ username }}"
-  community.general.cargo:
-    name: alacritty
-    state: latest
-    path: "$ALACRITTY_HOME"
+    - name: Prepare folders
+      when: alacritty_exists is failed
+      block:
+        - name: Remove old binary
+          become_user: "{{ username }}"
+          file:
+            path: "$ALACRITTY_HOME"
+            state: absent
+
+        - name: Create folders
+          become_user: "{{ username }}"
+          file:
+            path: "$ALACRITTY_HOME"
+            state: directory
+            recurse: yes
+
+    - name: Install alacritty
+      become_user: "{{ username }}"
+      community.general.cargo:
+        name: alacritty
+        state: latest
+        path: "$ALACRITTY_HOME"
 
 - name: Create directories
   become_user: "{{ username }}"
