@@ -34,6 +34,7 @@
 - name: Install required packages
   package:
     name:
+      - automake
       - libevent-dev
       - ncurses-dev
       - build-essential
