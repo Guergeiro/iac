@@ -1,0 +1,30 @@
+- name: Find latest release
+  block:
+    - uri:
+        url: "https://go.dev/dl/?mode=json"
+        return_content: yes
+      register: release_data
+
+    - set_fact:
+        latest_version: "{{ release_data.content | from_json | list | map(attribute='version') | sort | reverse | first }}"
+
+- name: Remove old binary
+  become_user: "{{ username }}"
+  file:
+    path: "$GOROOT"
+    state: absent
+
+- name: Create folders
+  become_user: "{{ username }}"
+  file:
+    path: "$GOROOT"
+    state: directory
+    recurse: yes
+
+- name: Download binary
+  become_user: "{{ username }}"
+  unarchive:
+    src: "https://go.dev/dl/{{ latest_version }}.linux-amd64.tar.gz"
+    dest: "$GOROOT"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
