@@ -1,0 +1,37 @@
+- name: check if sdkman is installed
+  command: sdk version
+  register: sdkman_exists
+  become_user: "{{ username }}"
+  ignore_errors: yes
+
+- name: Install Sdkman
+  when: sdkman_exists is failed
+  block:
+    - name: Remove old binary
+      become_user: "{{ username }}"
+      file:
+        path: "$SDKMAN_DIR"
+        state: absent
+
+    - name: Create folders
+      become_user: "{{ username }}"
+      file:
+        path: "$SDKMAN_DIR"
+        state: directory
+        recurse: yes
+
+    - name: Download Installer
+      get_url:
+        url: https://get.sdkman.io?rcupdate=false
+        owner: "{{ username }}"
+        mode: "u+rx"
+        dest: /tmp/sdkman.sh
+
+    - name: Run Installer
+      become_user: "{{ username }}"
+      command: /tmp/sdkman.sh
+
+- name: Update Sdkman
+  when: sdkman_exists is successful
+  become_user: "{{ username }}"
+  command: sdk selfupdate
