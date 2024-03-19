@@ -13,13 +13,6 @@
         path: "$SDKMAN_DIR"
         state: absent
 
-    - name: Create folders
-      become_user: "{{ username }}"
-      file:
-        path: "$SDKMAN_DIR"
-        state: directory
-        recurse: yes
-
     - name: Download Installer
       get_url:
         url: https://get.sdkman.io?rcupdate=false
