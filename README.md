@@ -25,13 +25,13 @@ _You may [change your user](./group_vars/all/vars.yml) for your specific needs._
 1. Install [Python3](https://www.python.org/)
 
    ```bash
-   sudo apt-get install python3 -y
+   sudo apt-get install python3 python3-pip git -y
    ```
 
 2. Install Ansible
 
    ```bash --target
-   python3 -m pip install --target ~/.local/share/pip/bin --user ansible-core
+   python3 -m pip install --user ansible-core
    ```
 
 3. Navigate to a place of your choice
