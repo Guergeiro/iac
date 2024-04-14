@@ -61,9 +61,3 @@ notify: !include notifications.yaml
 tts: !include tts.yaml
 wake_on_lan:
 backup:
-panel_iframe:
-  zigbee2mqtt:
-    title: Zigbee2MQTT
-    icon: mdi:zigbee
-    url: https://zigbee2mqtt.brenosalles.com
-    require_admin: true
