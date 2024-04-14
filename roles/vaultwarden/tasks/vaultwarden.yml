@@ -19,7 +19,6 @@
     recreate: yes
     env:
       "TZ": "{{ timezone }}"
-      "WEBSOCKET_ENABLED": "true"
       "SIGNUPS_VERIFY": "true"
       "SIGNUPS_ALLOWED": "false"
       "DISABLE_ADMIN_TOKEN": "true"
