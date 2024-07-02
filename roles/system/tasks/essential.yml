@@ -26,10 +26,6 @@
       apt:
         upgrade: dist
 
-    - name: apt-get dist-upgrade
-      apt:
-        upgrade: dist
-
     - name: apt-get autoclean
       apt:
         autoclean: yes

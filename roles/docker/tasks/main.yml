@@ -9,7 +9,7 @@
     builder_cache: true
 
 - name: homeserver tasks
-  when: ansible_facts['hostname'] != "localhost"
+  when: ansible_facts['hostname'] == "lisbon"
   block:
     - name: Create general docker network
       community.docker.docker_network:
@@ -19,6 +19,9 @@
         ipam_config:
           - subnet: 172.20.0.0/24
 
+- name: server tasks
+  when: ansible_facts['hostname'] != "localhost"
+  block:
     - name: Stop all containers every day at 4:40 AM
       cron:
         name: "Stop all containers every day at 4:40 AM"

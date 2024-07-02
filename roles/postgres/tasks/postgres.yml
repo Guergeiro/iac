@@ -39,6 +39,7 @@
     login_host: "0.0.0.0"
     login_user: "{{ postgres_user }}"
     login_password: "{{ postgres_password }}"
+    encoding: "UTF-8"
   with_items: "{{ databases }}"
 
 - name: Start {{ container_name }} at 5:00 AM

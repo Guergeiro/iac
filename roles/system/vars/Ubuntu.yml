@@ -8,3 +8,6 @@ extra_packages:
   - unzip
   - zip
   - python3
+  - bluez
+  - curl
+  - python3-passlib
