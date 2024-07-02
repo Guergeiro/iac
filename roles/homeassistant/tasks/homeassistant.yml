@@ -31,6 +31,7 @@
     pull: yes
     state: "started"
     recreate: yes
+    privileged: true
     env:
       "TZ": "{{ timezone }}"
       "DISABLE_JEMALLOC": "true"
@@ -38,6 +39,7 @@
       - 8123
     volumes:
       - "{{ docker_dir }}/{{ container_name }}:/config"
+      - "/run/dbus:/run/dbus:ro"
     network_mode: "host"
     restart_policy: always
 
