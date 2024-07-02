@@ -1,0 +1,23 @@
+- hosts: coolify
+  gather_facts: no
+  pre_tasks:
+    - import_tasks: tasks/ssh_juggle.yml
+
+- hosts: coolify
+  become: yes
+
+  roles:
+    - role: system
+    - role: users
+    - role: geerlingguy.security
+      vars:
+        security_ssh_permit_root_login: "yes"
+    - role: geerlingguy.ntp
+    - role: geerlingguy.git
+    - role: geerlingguy.pip
+    - role: geerlingguy.docker
+      vars:
+        docker_users:
+          - "{{ username }}"
+    - role: docker
+    - role: coolify

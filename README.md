@@ -70,6 +70,11 @@ _You may [change your user](./group_vars/all/vars.yml) for your specific needs._
        --vault-id @prompt
    ```
 
+   ```bash
+   ansible-playbook coolify.yml --ask-vault-password --ask-become-pass \
+       --vault-id @prompt
+   ```
+
 ## Vault Commands
 
 _More info

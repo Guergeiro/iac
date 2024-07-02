@@ -1,0 +1,9 @@
+- name: Download Installer
+  get_url:
+    url: https://cdn.coollabs.io/coolify/install.sh
+    owner: "{{ username }}"
+    mode: "u+rx"
+    dest: /tmp/coolify.sh
+
+- name: Run Installer
+  command: /tmp/coolify.sh
