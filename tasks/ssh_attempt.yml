@@ -1,0 +1,14 @@
+- block:
+    - name: Set new ansible_port to {{ item.port }} and ansible_user {{ item.user }}
+      set_fact:
+        ansible_port: "{{ item.port }}"
+        ansible_user: "{{ item.user }}"
+
+    - name: Trying with ansible_port {{ item.port }} and ansible_user {{ item.user }}
+      wait_for_connection:
+        timeout: 10
+      ignore_errors: true
+      register: _ssh_result
+  always:
+    - set_fact:
+        _ssh_condition: "{{ _ssh_result is failed }}"
