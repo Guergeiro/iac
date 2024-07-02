@@ -105,6 +105,18 @@ _More info
   ansible-vault rekey encrypted_file.yml
   ```
 
+- Encrypt string
+
+  ```bash
+  ansible-vault encrypt_string <string>
+  ```
+
+- Encrypt string
+
+  ```bash
+  cat file_with_string_no_tabs | ansible-vault decrypt
+  ```
+
 ## Author
 
 Created by [Breno Salles](https://brenosalles.com).
