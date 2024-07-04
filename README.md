@@ -101,7 +101,7 @@ _More info
 - Decrypt existing file
 
   ```bash
-  ansible-vault encrypt file1.yml
+  ansible-vault decrypt file1.yml
   ```
 
 - Change password of encrypted file

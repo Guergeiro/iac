@@ -1,0 +1,35 @@
+- include_vars: signal-messenger.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: "root"
+    group: "root"
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}"
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "bbernhard/signal-cli-rest-api:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+    ports: "{{ host_port }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}/signal-cli-config:/home/.local/share/signal-cli"
+    networks:
+      - name: docker_network
+    purge_networks: yes
+    restart_policy: always
+
+- name: Start {{ container_name }} at 5:00 AM
+  cron:
+    name: "Start {{ container_name }} at 5:00 AM"
+    minute: "0"
+    hour: "5"
+    job: "docker start {{ container_name }}"
