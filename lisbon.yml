@@ -14,9 +14,6 @@
     - role: geerlingguy.git
     - role: geerlingguy.pip
     - role: geerlingguy.docker
-      vars:
-        docker_users:
-          - "{{ username }}"
     - role: docker
     - role: security
     - role: cloudflare

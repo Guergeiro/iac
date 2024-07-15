@@ -1,0 +1,17 @@
+domains:
+  - {
+      proxy: "false",
+      domain: "{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "wireguard.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "homeassistant.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "zigbee2mqtt.{{ base_hostname }}"
+    }

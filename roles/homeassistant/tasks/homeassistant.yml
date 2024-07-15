@@ -12,7 +12,7 @@
 
 - name: Copy the config file
   copy:
-    src: files/homeassistant/
+    src: "files/{{ ansible_facts['hostname'] }}/homeassistant/"
     dest: "{{ docker_dir }}/{{ container_name }}/"
     decrypt: yes
     owner: "root"

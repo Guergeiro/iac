@@ -43,16 +43,17 @@
     name: "{{ extra_packages }}"
     state: present
 
-- name: homeserver tasks
-  when: ansible_facts['hostname'] != "localhost"
-  block:
-    - name: Set the hostname
-      hostname:
-        name: "{{ inventory_hostname }}"
+- name: Set the hostname
+  when:
+    - system_set_hostname|bool == True
+  hostname:
+    name: "{{ inventory_hostname }}"
 
-    - name: Reboot every day at 4:50 AM
-      cron:
-        name: "Reboot every day at 4:50 AM"
-        minute: "50"
-        hour: "4"
-        job: "/sbin/reboot"
+- name: Reboot every day at 4:50 AM
+  when:
+    - system_reboot|bool == True
+  cron:
+    name: "Reboot every day at 4:50 AM"
+    minute: "50"
+    hour: "4"
+    job: "/sbin/reboot"

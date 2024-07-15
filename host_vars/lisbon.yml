@@ -2,6 +2,7 @@ security_sudoers_passwordless:
   - "{{ username }}"
 security_fail2ban_enabled: true
 security_ssh_port: "{{ ansible_port }}"
+
 user_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           34316433663866663930303435363731333230663466636161343539306235663130653637616561
@@ -10,4 +11,56 @@ user_password: !vault |
           6237343063633663650a333861363564343461336433613234336261383239363065383532616461
           3637
 base_hostname: "brenosalles.com"
+
+cloudflare_domains:
+  - {
+      proxy: "false",
+      domain: "vpn.{{ base_hostname }}"
+    }
+  - {
+      proxy: "false",
+      domain: "ssh.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "lisbon.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "wireguard.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "vaultwarden.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "homeassistant.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "zigbee2mqtt.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "archive.{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
+      domain: "rss.{{ base_hostname }}"
+    }
+
+system_set_hostname: yes
+system_reboot: yes
+
+postgres_databases:
+  - homeassistant
+  - paperless
+  - vaultwarden
+  - freshrss
+
+docker_users:
+  - "{{ username }}"
 docker_dir: "/opt/docker/data"
+docker_generate_network: yes
+docker_stop_containers: yes

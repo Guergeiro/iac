@@ -1,0 +1,40 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+homeassistant:
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - 127.0.0.1
+        - ::1
+        - 192.168.16.0/24 # Host network
+        - 172.20.0.0/24 # Docker network ipam_config
+frontend:
+  themes: !include_dir_merge_named themes
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+    - 192.168.16.0/24 # Host network
+    - 172.20.0.0/24 # Docker network ipam_config
+
+google_assistant:
+  project_id: home-assitant-61266
+  service_account: !include service-account.json
+  report_state: true
+recorder:
+  db_url: postgresql://postgres:postgres@0.0.0.0:5432/homeassistant
+automation: !include automations.yaml
+scene: !include scenes.yaml
+script: !include scripts.yaml
+input_number: !include input_number.yaml
+template: !include templates.yaml
+counter: !include counter.yaml
+camera: !include cameras.yaml
+sensor: !include sensors.yaml
+notify: !include notifications.yaml
+tts: !include tts.yaml
+wake_on_lan:
+backup:

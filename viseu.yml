@@ -1,9 +1,9 @@
-- hosts: coolify
+- hosts: viseu
   gather_facts: no
   pre_tasks:
     - import_tasks: tasks/ssh_juggle.yml
 
-- hosts: coolify
+- hosts: viseu
   become: yes
 
   roles:
@@ -15,4 +15,8 @@
     - role: geerlingguy.pip
     - role: geerlingguy.docker
     - role: docker
-    - role: coolify
+    - role: security
+    - role: cloudflare
+    - role: nginx
+    - role: postgres
+    - role: homeassistant

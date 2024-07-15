@@ -1,1 +1,24 @@
-- include_tasks: cloudflare.yml
+- include_vars: cloudflare.yml
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "favonia/cloudflare-ddns:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    env:
+      "TZ": "{{ timezone }}"
+      "CF_API_TOKEN": "{{ cloudflare_dns_token }}"
+      "PROXIED": "is({{ cloudflare_domains | selectattr('proxy', 'equalto', 'true') | map(attribute='domain') | join(',') }})"
+      "DOMAINS": "{{ cloudflare_domains | map(attribute='domain') | join(',') }}"
+      "DELETE_ON_STOP": "true"
+    network_mode: "host"
+    restart_policy: always
+
+- name: Start {{ container_name }} at 5:00 AM
+  cron:
+    name: "Start {{ container_name }} at 5:00 AM"
+    minute: "0"
+    hour: "5"
+    job: "docker start {{ container_name }}"

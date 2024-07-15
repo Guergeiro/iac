@@ -3,7 +3,7 @@
 - name: Make sure the {{ container_name }} container is created and running
   community.docker.docker_container:
     name: "{{ container_name }}"
-    image: "gotenberg/gotenberg:7.8"
+    image: "gotenberg/gotenberg:8.7"
     pull: yes
     state: "started"
     recreate: yes
