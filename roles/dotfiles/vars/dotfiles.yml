@@ -2,6 +2,7 @@ clone_directory: "{{ base_directory}}/guergeiro/dotfiles"
 
 stow_directories:
   - alacritty
+  - awesome
   - bash
   - docker
   - git
@@ -10,5 +11,4 @@ stow_directories:
   - starship
   - tmux
   - vim
-  - X11
-  # - xfce
+  - xfce

@@ -1,0 +1,19 @@
+- name: Install awesome
+  package:
+    name:
+      - awesome
+      - acpi
+    state: present
+
+- name: Create folders
+  become_user: "{{ username }}"
+  file:
+    path: "$XDG_DATA_HOME/awesome"
+    state: directory
+    recurse: yes
+
+- name: Clone repository
+  become_user: "{{ username }}"
+  git:
+    repo: "https://github.com/streetturtle/awesome-wm-widgets.git"
+    dest: "$XDG_DATA_HOME/awesome/awesome-wm-widgets"
