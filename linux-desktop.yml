@@ -1,5 +1,7 @@
 - hosts: localhost
   become: yes
+  pre_tasks:
+    - import_tasks: tasks/system.yml
 
   roles:
     - role: system

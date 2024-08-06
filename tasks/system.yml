@@ -1,0 +1,4 @@
+- name: Set correct distribution release
+  set_fact:
+    ansible_distribution_release: "{{ lookup('ini', 'UBUNTU_CODENAME type=properties file=/etc/os-release') }}"
+  when: ansible_distribution in ['Pop!_OS', 'Linux Mint']
