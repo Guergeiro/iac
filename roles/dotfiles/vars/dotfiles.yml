@@ -11,4 +11,4 @@ stow_directories:
   - starship
   - tmux
   - vim
-  - xfce
+  # - xfce

@@ -11,9 +11,11 @@
     - role: docker
     - role: dotfiles
     - role: tmux
+    - role: asdf
     - role: rust
     - role: deno
-    - role: sdkman
+    - role: java
+    - role: kotlin
     - role: golang
     - role: pnpm
     - role: alacritty

@@ -8,13 +8,14 @@
     - role: geerlingguy.git
     - role: geerlingguy.pip
     - role: geerlingguy.docker
-    - role: xfce
     - role: docker
     - role: dotfiles
+    - role: xfce
     - role: tmux
+    - role: asdf
     - role: rust
     - role: deno
-    - role: sdkman
+    - role: java
     - role: golang
     - role: pnpm
     - role: alacritty

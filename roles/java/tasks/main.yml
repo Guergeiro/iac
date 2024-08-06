@@ -1,0 +1,12 @@
+- name: Install java
+  include_role:
+    name: asdf
+  vars:
+    asdf_skip_update: True
+    asdf_plugins:
+      - name: "java"
+        repository: "https://github.com/asdf-community/asdf-java.git"
+        versions:
+          - "openjdk-11"
+          - "openjdk-21"
+        global: "openjdk-21"

@@ -1,0 +1,37 @@
+- include_vars: asdf.yml
+
+- name: Install asdf plugins
+  become_user: "{{ username }}"
+  shell: >-
+    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
+    asdf plugin-add {{ item.name }} {{ item.repository }}
+  environment: "{{ environment_variables }}"
+  with_items: "{{ asdf_plugins }}"
+
+- name: Install asdf packages
+  become_user: "{{ username }}"
+  shell: >-
+    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
+    asdf install {{ item.0.name }} {{ item.1 }}
+  environment: "{{ environment_variables }}"
+  with_subelements:
+    - "{{ asdf_plugins }}"
+    - versions
+    - flags:
+      skip_missing: True
+
+- name: Set global asdf packages
+  become_user: "{{ username }}"
+  shell: >-
+    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
+    asdf global {{ item.name }} {{ item.global }}
+  environment: "{{ environment_variables }}"
+  when: item.global is defined
+  with_items: "{{ asdf_plugins }}"
+
+- name: Reshim asdf packages
+  become_user: "{{ username }}"
+  shell: >-
+    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
+    asdf reshim
+  environment: "{{ environment_variables }}"

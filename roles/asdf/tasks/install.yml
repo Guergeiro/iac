@@ -1,0 +1,33 @@
+- name: Create directories
+  become_user: "{{ username }}"
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+  with_items:
+    - "{{ base_directory }}/asdf-vm/asdf"
+
+- name: Install annoyingly unpackaged python module requirement
+  pip:
+    name: github3.py
+    state: present
+
+- name: Find latest release
+  community.general.github_release:
+    user: "asdf-vm"
+    repo: "asdf"
+    action: latest_release
+  register: release_data
+
+- name: Remove annoyingly unpackaged python module requirement
+  pip:
+    name: github3.py
+    state: absent
+
+- name: Clone repositories
+  become_user: "{{ username }}"
+  git:
+    repo: "https://github.com/asdf-vm/asdf.git"
+    dest: "{{ base_directory }}/asdf-vm/asdf"
+    version: "{{ release_data.tag }}"
+    force: true
