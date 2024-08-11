@@ -64,3 +64,5 @@ docker_users:
 docker_dir: "/opt/docker/data"
 docker_generate_network: yes
 docker_stop_containers: yes
+
+homeassistant_signal: yes

@@ -2,6 +2,6 @@
 - include_tasks: zigbee2mqtt.yml
 - include_tasks: signal-messenger.yml
   when:
-    - homeassistant_signal|bool != False
+    - homeassistant_signal | default(False) == True
 - include_tasks: music-assistant.yml
 - include_tasks: homeassistant.yml
