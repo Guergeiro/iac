@@ -24,7 +24,6 @@
       - "{{ docker_dir }}/{{ container_name }}/signal-cli-config:/home/.local/share/signal-cli"
     networks:
       - name: docker_network
-    purge_networks: yes
     restart_policy: always
 
 - name: Start {{ container_name }} at 5:00 AM

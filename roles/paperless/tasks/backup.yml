@@ -37,7 +37,6 @@
       - "{{ docker_dir }}/{{ container_name }}/media:/media"
     networks:
       - name: docker_network
-    purge_networks: yes
     restart_policy: "on-failure"
     command: "paperless"
 

@@ -1,7 +1,13 @@
 security_sudoers_passwordless:
   - "{{ username }}"
 security_fail2ban_enabled: true
-security_ssh_port: "{{ ansible_port }}"
+security_ssh_port: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    34653739386634323131393866383434373163326461313465383332393065373165653661386431
+    6264303364356337623937616164326662666430323036350a356565373265643066373465316537
+    34636133613031353865383039623839343836613931383139323963326231656561313436613466
+    6565353163353732370a383430303061303163376131363764333235313639646230313630313161
+    3335
 
 user_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -65,4 +71,7 @@ docker_dir: "/opt/docker/data"
 docker_generate_network: yes
 docker_stop_containers: yes
 
+homeassistant_mosquitto: yes
+homeassistant_zigbee2mqtt: yes
 homeassistant_signal: yes
+homeassistant_music_assistant: yes

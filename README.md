@@ -121,7 +121,7 @@ _More info
   ansible-vault encrypt_string <string>
   ```
 
-- Encrypt string
+- Decrypt string
 
   ```bash
   cat file_with_string_no_tabs | ansible-vault decrypt

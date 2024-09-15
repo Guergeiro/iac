@@ -45,15 +45,36 @@
 
 - name: Set the hostname
   when:
-    - system_set_hostname|bool == True
+    - system_set_hostname | default(False) == True
   hostname:
     name: "{{ inventory_hostname }}"
 
 - name: Reboot every day at 4:50 AM
   when:
-    - system_reboot|bool == True
+    - system_reboot | default(False) == True
   cron:
     name: "Reboot every day at 4:50 AM"
     minute: "50"
     hour: "4"
     job: "/sbin/reboot"
+
+- name: System power settings
+  when: system_power_settings | default(False) == True
+  block:
+    - name: Create the directories
+      file:
+        state: directory
+        path: "{{ item }}"
+        recurse: yes
+        owner: "root"
+        group: "root"
+      with_items:
+          - "/etc/systemd/logind.conf.d"
+
+    - name: Copy files
+      copy:
+        src: "files/"
+        dest: "/etc/systemd/logind.conf.d/"
+        decrypt: yes
+        owner: "root"
+        group: "root"

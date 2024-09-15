@@ -44,7 +44,6 @@
       - "{{ docker_dir }}/{{ container_name }}/data:/mosquitto/data"
     networks:
       - name: docker_network
-    purge_networks: yes
     restart_policy: always
 
 - name: Start {{ container_name }} at 5:00 AM

@@ -34,7 +34,6 @@
       - "/dev/serial/by-id/{{ zigbee_coordinator_id }}:/dev/ttyACM0"
     networks:
       - name: docker_network
-    purge_networks: yes
     restart_policy: always
 
 - name: Start {{ container_name }} at 5:00 AM

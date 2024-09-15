@@ -40,7 +40,6 @@
       - "{{ docker_dir }}/{{ container_name }}/data/rsa_key.pub.pem:/keys/rsa_key.pub.pem"
     networks:
       - name: docker_network
-    purge_networks: yes
     restart_policy: "on-failure"
     command: "vaultwarden"
 

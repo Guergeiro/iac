@@ -1,7 +1,13 @@
 - include_tasks: mosquitto.yml
+  when:
+    - homeassistant_mosquitto | default(False) == True
 - include_tasks: zigbee2mqtt.yml
+  when:
+    - homeassistant_zigbee2mqtt | default(False) == True
 - include_tasks: signal-messenger.yml
   when:
     - homeassistant_signal | default(False) == True
 - include_tasks: music-assistant.yml
+  when:
+    - homeassistant_music_assistant | default(False) == True
 - include_tasks: homeassistant.yml
