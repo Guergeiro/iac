@@ -18,5 +18,6 @@
     - role: security
     - role: cloudflare
     - role: nginx
+    - role: wireguard
     - role: postgres
     - role: homeassistant

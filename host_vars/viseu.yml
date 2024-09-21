@@ -25,6 +25,10 @@ cloudflare_domains:
     }
   - {
       proxy: "true",
+      domain: "wireguard-{{ base_hostname }}"
+    }
+  - {
+      proxy: "true",
       domain: "homeassistant-{{ base_hostname }}"
     }
 
@@ -41,4 +45,5 @@ docker_dir: "/opt/docker/data"
 docker_generate_network: yes
 docker_stop_containers: yes
 
-homeassistant_music_assistant: yes
+wireguard_hostname: "{{ base_hostname }}"
+wireguard_inet_interface: "enp4s0f1"

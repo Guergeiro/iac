@@ -24,10 +24,10 @@
       "net.ipv4.conf.all.src_valid_mark": "1"
       "net.ipv4.ip_forward": "1"
     env:
-      "WG_HOST": "{{ hostname_vpn }}"
+      "WG_HOST": "{{ wireguard_hostname }}"
       "TZ": "{{ timezone }}"
-      "WG_POST_UP": "{{ post_up }}"
-      "WG_PRE_DOWN": "{{ pre_down }}"
+      "WG_DEVICE": "{{ wireguard_inet_interface }}"
+      "WG_DEFAULT_ADDRESS": "10.8.0.x"
     ports: "{{ host_port }}"
     volumes:
       - "{{ docker_dir }}/{{ container_name }}:/etc/wireguard"
