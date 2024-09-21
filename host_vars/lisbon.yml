@@ -21,14 +21,6 @@ base_hostname: "brenosalles.com"
 cloudflare_domains:
   - {
       proxy: "false",
-      domain: "vpn.{{ base_hostname }}"
-    }
-  - {
-      proxy: "false",
-      domain: "ssh.{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
       domain: "lisbon.{{ base_hostname }}"
     }
   - {

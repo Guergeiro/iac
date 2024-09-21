@@ -10,7 +10,7 @@
 
 - name: Create general docker network
   when:
-    - docker_generate_network|bool == True
+    - docker_generate_network | default(False) == True
   community.docker.docker_network:
     name: docker_network
     state: present
@@ -20,7 +20,7 @@
 
 - name: Stop all containers every day at 4:40 AM
   when:
-    - docker_stop_containers|bool == True
+    - docker_stop_containers | default(False) == True
   cron:
     name: "Stop all containers every day at 4:40 AM"
     minute: "40"
