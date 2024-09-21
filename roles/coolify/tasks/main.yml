@@ -7,3 +7,10 @@
 
 - name: Run Installer
   command: /tmp/coolify.sh
+
+- name: Stop coolify containers every day at 4:40 AM
+  cron:
+    name: "Stop coolify containers every day at 4:40 AM"
+    minute: "40"
+    hour: "4"
+    job: "docker stop $(docker container ls -q -f 'name=coolify*')"

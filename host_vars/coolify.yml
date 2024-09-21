@@ -19,4 +19,3 @@ docker_users:
   - "{{ username }}"
 docker_dir: "/opt/docker/data"
 docker_generate_network: no
-docker_stop_containers: yes
