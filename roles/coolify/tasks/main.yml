@@ -13,11 +13,11 @@
     name: "Stop coolify containers every day at 4:40 AM"
     minute: "40"
     hour: "4"
-    job: "docker stop $(docker container ls -q -f 'name=coolify*')"
+    job: "docker compose -f /data/coolify/source/docker-compose.yml -f /data/coolify/source/docker-compose.prod.yml down"
 
 - name: Start coolify containers every day at 5:00 AM
   cron:
     name: "Start coolify containers every day at 5:00 AM"
     minute: "0"
     hour: "5"
-    job: "docker start $(docker ps -q -f 'status=exited')"
+    job: "docker compose --env-file /data/coolify/source/.env -f /data/coolify/source/docker-compose.yml -f /data/coolify/source/docker-compose.prod.yml up -d --pull always --remove-orphans --force-recreate"
