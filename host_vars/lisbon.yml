@@ -18,35 +18,28 @@ user_password: !vault |
           3637
 base_hostname: "brenosalles.com"
 
-cloudflare_domains:
-  - {
-      proxy: "false",
-      domain: "lisbon.{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "wireguard.{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "vaultwarden.{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "homeassistant.{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "zigbee2mqtt.{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "archive.{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "rss.{{ base_hostname }}"
-    }
+domains:
+  base:
+    proxy: "false"
+    domain: "lisbon.{{ base_hostname }}"
+  vaultwarden:
+    proxy: "true"
+    domain: "vaultwarden.{{ base_hostname }}"
+  paperless:
+    proxy: "true"
+    domain: "archive.{{ base_hostname }}"
+  freshrss:
+    proxy: "true"
+    domain: "rss.{{ base_hostname }}"
+  wireguard:
+    proxy: "true"
+    domain: "wireguard.{{ base_hostname }}"
+  homeassistant:
+    proxy: "true"
+    domain: "homeassistant.{{ base_hostname }}"
+  zigbee2mqtt:
+    proxy: "true"
+    domain: "zigbee2mqtt.{{ base_hostname }}"
 
 system_set_hostname: yes
 system_reboot: yes

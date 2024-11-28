@@ -16,21 +16,19 @@ user_password: !vault |
           61646533623165636265343961646232613963323561393465313666316638623732363036343638
           6237343063633663650a333861363564343461336433613234336261383239363065383532616461
           3637
-base_hostname: "viseu.brenosalles.com"
 
-cloudflare_domains:
-  - {
-      proxy: "false",
-      domain: "{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "wireguard-{{ base_hostname }}"
-    }
-  - {
-      proxy: "true",
-      domain: "homeassistant-{{ base_hostname }}"
-    }
+base_hostname: "brenosalles.com"
+
+domains:
+  base:
+    proxy: "false"
+    domain: "viseu.{{ base_hostname }}"
+  wireguard:
+    proxy: "true"
+    domain: "wireguard-viseu.{{ base_hostname }}"
+  homeassistant:
+    proxy: "true"
+    domain: "homeassistant-viseu.{{ base_hostname }}"
 
 system_set_hostname: yes
 system_reboot: yes

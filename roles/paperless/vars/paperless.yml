@@ -1,6 +1,6 @@
 container_name: "paperless"
 
-hostname_paperless: "https://archive.{{ base_hostname }}"
+hostname_paperless: "https://{{ domains.paperless.domain }}"
 
 paperless_secret_key: !vault |
           $ANSIBLE_VAULT;1.1;AES256
