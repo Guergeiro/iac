@@ -51,6 +51,7 @@ _You may [change your user](./group_vars/all/vars.yml) for your specific needs._
 
    ```bash
    ansible-galaxy install -r requirements.yml --force
+   pip install --no-cache-dir -r requirements.txt
    ```
 
 6. Run the playbook you want
