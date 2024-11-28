@@ -15,8 +15,9 @@
     name: docker_network
     state: present
     force: yes
+    enable_ipv6: yes
     ipam_config:
-      - subnet: 172.20.0.0/24
+      - subnet: "172.20.0.0/24"
 
 - name: Stop all containers every day at 4:40 AM
   when:

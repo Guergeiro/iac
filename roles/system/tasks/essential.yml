@@ -49,6 +49,9 @@
   hostname:
     name: "{{ inventory_hostname }}"
 
+- name: Cleanup old crons
+  command: "crontab -r"
+
 - name: Reboot every day at 4:50 AM
   when:
     - system_reboot | default(False) == True
