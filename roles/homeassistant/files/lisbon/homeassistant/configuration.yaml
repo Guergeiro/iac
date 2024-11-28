@@ -21,7 +21,7 @@ http:
     - 172.20.0.0/24 # Docker network ipam_config
 
 google_assistant:
-  project_id: home-assitant-61266
+  project_id: !secret google_project_id
   service_account: !include service-account.json
   report_state: true
 recorder:

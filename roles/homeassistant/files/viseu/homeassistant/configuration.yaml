@@ -21,7 +21,16 @@ http:
     - 127.0.0.1
     - 192.168.1.0/24 # Host network
     - 172.20.0.0/24 # Docker network ipam_config
+alexa:
+  smart_home:
+    endpoint: !secret amazon_endpoint
+    client_id: !secret amazon_client_id
+    client_secret: !secret amazon_client_secret
 
+tuya_smart_ir_ac:
+  access_id: !secret tuya_access_id
+  access_secret: !secret tuya_access_secret
+  country: !secret tuya_country
 recorder:
   db_url: postgresql://postgres:postgres@0.0.0.0:5432/homeassistant
 automation: !include automations.yaml
