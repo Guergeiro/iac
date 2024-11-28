@@ -53,6 +53,3 @@ docker_users:
 docker_dir: "/opt/docker/data"
 docker_generate_network: yes
 docker_stop_containers: yes
-
-wireguard_hostname: "{{ base_hostname }}"
-wireguard_inet_interface: "enp4s0f1"

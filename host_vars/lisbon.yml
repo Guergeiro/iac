@@ -68,9 +68,6 @@ docker_dir: "/opt/docker/data"
 docker_generate_network: yes
 docker_stop_containers: yes
 
-wireguard_hostname: "vpn.{{ base_hostname }}"
-wireguard_inet_interface: "eth0"
-
 homeassistant_mosquitto: yes
 homeassistant_zigbee2mqtt: yes
 homeassistant_signal: yes
