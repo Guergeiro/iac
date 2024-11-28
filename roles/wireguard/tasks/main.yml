@@ -1,1 +1,55 @@
-- include_tasks: wireguard.yml
+- include_vars: wireguard.yml
+
+- name: Create the directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    recurse: yes
+    owner: "root"
+    group: "root"
+  with_items:
+      - "{{ docker_dir }}/{{ container_name }}"
+
+- name: Make sure the {{ container_name }} container is created and running
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "ghcr.io/wg-easy/wg-easy:latest"
+    pull: yes
+    state: "started"
+    recreate: yes
+    capabilities:
+      - net_admin
+      - sys_module
+    sysctls:
+      "net.ipv4.conf.all.src_valid_mark": "1"
+      "net.ipv4.ip_forward": "1"
+    env:
+      "WG_HOST": "{{ domains.base.domain }}"
+      "TZ": "{{ timezone }}"
+      "WG_DEFAULT_ADDRESS": "10.8.0.x"
+      "UI_TRAFFIC_STATS": "true"
+      "UI_CHART_TYPE": "1"
+      "WG_ENABLE_ONE_TIME_LINKS": "true"
+      "UI_ENABLE_SORT_CLIENTS": "true"
+    ports: "{{ host_port }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container_name }}:/etc/wireguard"
+    networks:
+      - name: docker_network
+    restart_policy: always
+    labels:
+      "traefik.enable": "true"
+      "traefik.http.services.wireguard.loadbalancer.server.port": "51821"
+
+      "traefik.http.routers.wireguard.rule": "Host(`{{ domains.wireguard.domain }}`)"
+      "traefik.http.routers.wireguard.entrypoints": "websecure"
+      "traefik.http.routers.wireguard.tls": "true"
+      "traefik.http.routers.wireguard.tls.certresolver": "cloudflare"
+      "traefik.http.routers.wireguard.middlewares": "basic-auth"
+
+- name: Start {{ container_name }} at 5:00 AM
+  cron:
+    name: "Start {{ container_name }} at 5:00 AM"
+    minute: "0"
+    hour: "5"
+    job: "docker start {{ container_name }}"

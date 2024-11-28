@@ -35,6 +35,15 @@
     networks:
       - name: docker_network
     restart_policy: always
+    labels:
+      "traefik.enable": "true"
+      "traefik.http.services.zigbee2mqtt.loadbalancer.server.port": "8080"
+
+      "traefik.http.routers.zigbee2mqtt.rule": "Host(`{{ domains.zigbee2mqtt.domain }}`)"
+      "traefik.http.routers.zigbee2mqtt.entrypoints": "websecure"
+      "traefik.http.routers.zigbee2mqtt.tls": "true"
+      "traefik.http.routers.zigbee2mqtt.tls.certresolver": "cloudflare"
+      "traefik.http.routers.zigbee2mqtt.middlewares": "basic-auth"
 
 - name: Start {{ container_name }} at 5:00 AM
   cron:

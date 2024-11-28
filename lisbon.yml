@@ -17,7 +17,7 @@
     - role: docker
     - role: security
     - role: cloudflare
-    - role: nginx
+    - role: traefik
     - role: wireguard
     - role: postgres
     - role: vaultwarden

@@ -48,6 +48,14 @@
       - "/run/dbus:/run/dbus:ro"
     network_mode: "host"
     restart_policy: always
+    labels:
+      "traefik.enable": "true"
+      "traefik.http.services.homeassistant.loadbalancer.server.port": "8123"
+
+      "traefik.http.routers.homeassistant.rule": "Host(`{{ domains.homeassistant.domain }}`)"
+      "traefik.http.routers.homeassistant.entrypoints": "websecure"
+      "traefik.http.routers.homeassistant.tls": "true"
+      "traefik.http.routers.homeassistant.tls.certresolver": "cloudflare"
 
 - name: Start {{ container_name }} at 5:00 AM
   cron:

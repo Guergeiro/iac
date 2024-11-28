@@ -50,6 +50,14 @@
     networks:
       - name: docker_network
     restart_policy: always
+    labels:
+      "traefik.enable": "true"
+      "traefik.http.services.paperless.loadbalancer.server.port": "8000"
+
+      "traefik.http.routers.paperless.rule": "Host(`{{ domains.paperless.domain }}`)"
+      "traefik.http.routers.paperless.entrypoints": "websecure"
+      "traefik.http.routers.paperless.tls": "true"
+      "traefik.http.routers.paperless.tls.certresolver": "cloudflare"
 
 - name: Start {{ container_name }} at 5:00 AM
   cron:
