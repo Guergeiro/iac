@@ -12,6 +12,8 @@
       "CF_API_TOKEN": "{{ cloudflare_dns_token }}"
       "PROXIED": "is({{ cloudflare_domains | selectattr('proxy', 'equalto', 'true') | map(attribute='domain') | join(',') }})"
       "DOMAINS": "{{ cloudflare_domains | map(attribute='domain') | join(',') }}"
+      "IP4_PROVIDER": "url:https://api4.ipify.org"
+      "IP6_PROVIDER": "url:https://api6.ipify.org"
       "DELETE_ON_STOP": "true"
     network_mode: "host"
     restart_policy: always
