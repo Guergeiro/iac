@@ -10,6 +10,8 @@ homeassistant:
         - ::1
         - 192.168.1.0/24 # Host network
         - 172.20.0.0/24 # Docker network ipam_config
+  allowlist_external_dirs:
+    - "/media" # Integration output files
 frontend:
   themes: !include_dir_merge_named themes
 
@@ -19,8 +21,6 @@ http:
     - 127.0.0.1
     - 192.168.1.0/24 # Host network
     - 172.20.0.0/24 # Docker network ipam_config
-allowlist_external_dirs:
-  - "/config/integrations" # Integration output files
 
 recorder:
   db_url: postgresql://postgres:postgres@0.0.0.0:5432/homeassistant

@@ -8,12 +8,13 @@
     owner: "root"
     group: "root"
   with_items:
-      - "{{ docker_dir }}/{{ container_name }}"
+      - "{{ docker_dir }}/{{ container_name }}/config"
+      - "{{ docker_dir }}/{{ container_name }}/media"
 
 - name: Copy the config file
   copy:
     src: "files/{{ ansible_facts['hostname'] }}/homeassistant/"
-    dest: "{{ docker_dir }}/{{ container_name }}/"
+    dest: "{{ docker_dir }}/{{ container_name }}/config"
     decrypt: yes
     owner: "root"
     group: "root"
@@ -23,10 +24,10 @@
     path: "{{ item }}"
     state: touch
   with_items:
-      - "{{ docker_dir }}/{{ container_name }}/automations.yaml"
-      - "{{ docker_dir }}/{{ container_name }}/counter.yaml"
-      - "{{ docker_dir }}/{{ container_name }}/scenes.yaml"
-      - "{{ docker_dir }}/{{ container_name }}/scripts.yaml"
+      - "{{ docker_dir }}/{{ container_name }}/config/automations.yaml"
+      - "{{ docker_dir }}/{{ container_name }}/config/counter.yaml"
+      - "{{ docker_dir }}/{{ container_name }}/config/scenes.yaml"
+      - "{{ docker_dir }}/{{ container_name }}/config/scripts.yaml"
 
 - name: Make sure the {{ container_name }} container is created and running
   community.docker.docker_container:
@@ -42,7 +43,8 @@
     exposed_ports:
       - 8123
     volumes:
-      - "{{ docker_dir }}/{{ container_name }}:/config"
+      - "{{ docker_dir }}/{{ container_name }}/config:/config"
+      - "{{ docker_dir }}/{{ container_name }}/media:/media"
       - "/run/dbus:/run/dbus:ro"
     network_mode: "host"
     restart_policy: always
@@ -57,7 +59,7 @@
 - name: Install hacs
   shell: wget -O - https://get.hacs.xyz | bash -
   args:
-    chdir: "{{ docker_dir }}/{{ container_name }}/"
+    chdir: "{{ docker_dir }}/{{ container_name }}/config"
     executable: /bin/bash
 
 - name: Restart {{ container_name }} container
