@@ -41,6 +41,7 @@ domains:
     proxy: "true"
     domain: "homeassistant-viseu.{{ base_hostname }}"
 
+system_cleanup_crons: yes
 system_set_hostname: yes
 system_reboot: yes
 system_power_settings: yes

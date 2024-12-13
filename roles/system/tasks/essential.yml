@@ -50,6 +50,7 @@
     name: "{{ inventory_hostname }}"
 
 - name: Cleanup old crons
+  when: system_cleanup_crons | default(False) == True
   command: "crontab -r"
 
 - name: Reboot every day at 4:50 AM

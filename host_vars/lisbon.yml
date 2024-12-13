@@ -53,6 +53,7 @@ domains:
     proxy: "true"
     domain: "zigbee2mqtt.{{ base_hostname }}"
 
+system_cleanup_crons: yes
 system_set_hostname: yes
 system_reboot: yes
 
