@@ -11,13 +11,32 @@
 - name: Create general docker network
   when:
     - docker_generate_network | default(False) == True
-  community.docker.docker_network:
-    name: docker_network
-    state: present
-    force: yes
-    enable_ipv6: yes
-    ipam_config:
-      - subnet: "172.20.0.0/24"
+  block:
+    - name: Enable experimental requirements for IPv6
+      copy:
+        dest: /etc/docker/daemon.json
+        content: "{{ docker_json }}"
+      vars:
+        docker_json: {
+          "ip6tables": true,
+          "experimental": true,
+          "userland-proxy": false
+        }
+    - name: Configure network
+      community.docker.docker_network:
+        name: docker_network
+        state: present
+        force: yes
+        enable_ipv6: yes
+        ipam_config:
+          - subnet: "172.20.0.0/24"
+          - subnet: "fd00:cafe:face:feed::/64"
+
+    - name: Restart docker daemon
+      service:
+        name: docker
+        state: restarted
+        enabled: yes
 
 - name: Stop all containers every day at 4:40 AM
   when:
