@@ -1,11 +1,15 @@
-- name: Create directories
+- name: Remove old binary
   become_user: "{{ username }}"
   file:
+    path: "$ASDF_HOME/bin"
+    state: absent
+
+- name: Create folders
+  become_user: "{{ username }}"
+  file:
+    path: "$ASDF_HOME/bin"
     state: directory
-    path: "{{ item }}"
     recurse: yes
-  with_items:
-    - "{{ base_directory }}/asdf-vm/asdf"
 
 - name: Install annoyingly unpackaged python module requirement
   pip:
@@ -24,10 +28,9 @@
     name: github3.py
     state: absent
 
-- name: Clone repositories
+- name: Download binary
   become_user: "{{ username }}"
-  git:
-    repo: "https://github.com/asdf-vm/asdf.git"
-    dest: "{{ base_directory }}/asdf-vm/asdf"
-    version: "{{ release_data.tag }}"
-    force: true
+  unarchive:
+    src: "https://github.com/asdf-vm/asdf/releases/latest/download/asdf-{{ release_data.tag }}-linux-amd64.tar.gz"
+    dest: "$ASDF_HOME/bin"
+    remote_src: yes

@@ -3,17 +3,16 @@
 - name: Install asdf plugins
   become_user: "{{ username }}"
   shell: >-
-    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
-    asdf plugin-add {{ item.name }} {{ item.repository }}
+    $ASDF_HOME/bin/asdf plugin add {{ item.name }} {{ item.repository }}
   environment: "{{ environment_variables }}"
   with_items: "{{ asdf_plugins }}"
 
 - name: Install asdf packages
   become_user: "{{ username }}"
   shell: >-
-    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
-    asdf install {{ item.0.name }} {{ item.1 }}
+    $ASDF_HOME/bin/asdf install {{ item.0.name }} {{ item.1 }}
   environment: "{{ environment_variables }}"
+  ignore_errors: true
   with_subelements:
     - "{{ asdf_plugins }}"
     - versions
@@ -23,8 +22,7 @@
 - name: Set global asdf packages
   become_user: "{{ username }}"
   shell: >-
-    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
-    asdf global {{ item.name }} {{ item.global }}
+    $ASDF_HOME/bin/asdf set --home {{ item.name }} {{ item.global }}
   environment: "{{ environment_variables }}"
   when: item.global is defined
   with_items: "{{ asdf_plugins }}"
@@ -32,6 +30,5 @@
 - name: Reshim asdf packages
   become_user: "{{ username }}"
   shell: >-
-    . {{ base_directory }}/asdf-vm/asdf/asdf.sh &&
-    asdf reshim
+    $ASDF_HOME/bin/asdf reshim
   environment: "{{ environment_variables }}"

@@ -5,7 +5,7 @@
     asdf_skip_update: True
     asdf_plugins:
       - name: "java"
-        repository: "https://github.com/asdf-community/asdf-java.git"
+        repository: "https://github.com/halcyon/asdf-java.git"
         versions:
           - "openjdk-11"
           - "openjdk-21"
