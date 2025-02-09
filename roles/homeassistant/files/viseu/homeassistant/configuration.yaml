@@ -31,8 +31,6 @@ tuya_smart_ir_ac:
   access_id: !secret tuya_access_id
   access_secret: !secret tuya_access_secret
   country: !secret tuya_country
-recorder:
-  db_url: postgresql://postgres:postgres@0.0.0.0:5432/homeassistant
 automation: !include automations.yaml
 scene: !include scenes.yaml
 script: !include scripts.yaml

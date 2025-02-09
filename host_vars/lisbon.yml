@@ -58,7 +58,6 @@ system_set_hostname: yes
 system_reboot: yes
 
 postgres_databases:
-  - homeassistant
   - paperless
   - vaultwarden
   - freshrss

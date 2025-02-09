@@ -24,8 +24,6 @@ google_assistant:
   project_id: !secret google_project_id
   service_account: !include service-account.json
   report_state: true
-recorder:
-  db_url: postgresql://postgres:postgres@0.0.0.0:5432/homeassistant
 automation: !include automations.yaml
 scene: !include scenes.yaml
 script: !include scripts.yaml

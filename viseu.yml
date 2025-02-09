@@ -19,5 +19,4 @@
     - role: cloudflare
     - role: traefik
     - role: wireguard
-    - role: postgres
     - role: homeassistant

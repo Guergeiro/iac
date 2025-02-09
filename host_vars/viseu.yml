@@ -46,9 +46,6 @@ system_set_hostname: yes
 system_reboot: yes
 system_power_settings: yes
 
-postgres_databases:
-  - homeassistant
-
 docker_users:
   - "{{ username }}"
 docker_dir: "/opt/docker/data"
