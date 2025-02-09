@@ -20,6 +20,6 @@
 - name: Download binary
   become_user: "{{ username }}"
   unarchive:
-    src: https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    src: https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
     dest: "$NEOVIM_HOME"
     remote_src: yes
