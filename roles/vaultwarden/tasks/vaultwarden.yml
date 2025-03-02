@@ -34,7 +34,7 @@
     volumes:
       - "{{ docker_dir }}/{{ container_name }}/data:/data"
     networks:
-      - name: docker_network
+      - name: reverse_proxy
     restart_policy: always
     labels:
       "traefik.enable": "true"

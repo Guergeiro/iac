@@ -38,7 +38,9 @@
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
     networks:
-      - name: docker_network
+      - name: reverse_proxy
+    comparisons:
+          networks: strict
     etc_hosts:
       "host.docker.internal": "host-gateway"
     restart_policy: always

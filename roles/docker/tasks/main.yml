@@ -22,9 +22,9 @@
           "experimental": true,
           "userland-proxy": false
         }
-    - name: Configure network
+    - name: Configure reverse_proxy network
       community.docker.docker_network:
-        name: docker_network
+        name: reverse_proxy
         state: present
         force: yes
         enable_ipv6: yes
