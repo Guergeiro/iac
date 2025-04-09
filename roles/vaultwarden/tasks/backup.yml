@@ -39,7 +39,9 @@
       - "{{ docker_dir }}/{{ container_name }}/data/rsa_key.pem:/keys/rsa_key.pem"
       - "{{ docker_dir }}/{{ container_name }}/data/rsa_key.pub.pem:/keys/rsa_key.pub.pem"
     networks:
-      - name: reverse_proxy
+      - name: postgres_network
+    comparisons:
+      networks: strict
     restart_policy: "on-failure"
     command: "vaultwarden"
 

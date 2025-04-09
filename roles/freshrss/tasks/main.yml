@@ -62,9 +62,13 @@
       - "{{ docker_dir }}/{{ container_name }}/extensions:/var/www/FreshRSS/extensions"
     networks:
       - name: reverse_proxy
+      - name: postgres_network
+    comparisons:
+      networks: strict
     restart_policy: always
     labels:
       "traefik.enable": "true"
+      "traefik.docker.network": "reverse_proxy"
       "traefik.http.services.freshrss.loadbalancer.server.port": "8080"
 
       "traefik.http.routers.freshrss.rule": "Host(`{{ domains.freshrss.domain }}`)"

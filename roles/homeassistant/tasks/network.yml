@@ -1,0 +1,6 @@
+- name: Configure homeassistant network
+  community.docker.docker_network:
+    name: homeassistant_network
+    state: present
+    force: yes
+

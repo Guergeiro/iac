@@ -49,9 +49,14 @@
       - "{{ docker_dir }}/{{ container_name }}/data:/usr/src/paperless/data"
     networks:
       - name: reverse_proxy
+      - name: postgres_network
+      - name: paperless_network
+    comparisons:
+      networks: strict
     restart_policy: always
     labels:
       "traefik.enable": "true"
+      "traefik.docker.network": "reverse_proxy"
       "traefik.http.services.paperless.loadbalancer.server.port": "8000"
 
       "traefik.http.routers.paperless.rule": "Host(`{{ domains.paperless.domain }}`)"

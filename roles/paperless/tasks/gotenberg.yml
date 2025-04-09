@@ -10,7 +10,9 @@
     env:
       "TZ": "{{ timezone }}"
     networks:
-      - name: reverse_proxy
+      - name: paperless_network
+    comparisons:
+      networks: strict
     restart_policy: always
     command: "gotenberg --chromium-disable-javascript=true --chromium-allow-list=file:///tmp/.*"
 

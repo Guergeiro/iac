@@ -10,7 +10,9 @@
     env:
       "TZ": "{{ timezone }}"
     networks:
-      - name: reverse_proxy
+      - name: paperless_network
+    comparisons:
+      networks: strict
     restart_policy: always
 
 - name: Start {{ container_name }} at 5:00 AM

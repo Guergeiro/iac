@@ -43,7 +43,9 @@
       - "{{ docker_dir }}/{{ container_name }}/logs:/mosquitto/logs"
       - "{{ docker_dir }}/{{ container_name }}/data:/mosquitto/data"
     networks:
-      - name: reverse_proxy
+      - name: homeassistant_network
+    comparisons:
+      networks: strict
     restart_policy: always
 
 - name: Start {{ container_name }} at 5:00 AM
