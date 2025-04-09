@@ -35,13 +35,13 @@
     volumes:
       - "{{ docker_dir }}/{{ container_name }}:/etc/wireguard"
     networks:
-      - name: reverse_proxy
+      - name: proxy_network
     comparisons:
       networks: strict
     restart_policy: always
     labels:
       "traefik.enable": "true"
-      "traefik.docker.network": "reverse_proxy"
+      "traefik.docker.network": "proxy_network"
       "traefik.http.services.wireguard.loadbalancer.server.port": "51821"
 
       "traefik.http.routers.wireguard.rule": "Host(`{{ domains.wireguard.domain }}`)"

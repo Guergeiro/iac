@@ -38,14 +38,14 @@
     devices:
       - "/dev/serial/by-id/{{ zigbee_coordinator_id }}:/dev/ttyACM0"
     networks:
-      - name: reverse_proxy
+      - name: proxy_network
       - name: homeassistant_network
     comparisons:
       networks: strict
     restart_policy: always
     labels:
       "traefik.enable": "true"
-      "traefik.docker.network": "reverse_proxy"
+      "traefik.docker.network": "proxy_network"
       "traefik.http.services.zigbee2mqtt.loadbalancer.server.port": "8080"
 
       "traefik.http.routers.zigbee2mqtt.rule": "Host(`{{ domains.zigbee2mqtt.domain }}`)"
