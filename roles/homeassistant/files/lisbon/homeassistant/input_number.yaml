@@ -1,8 +1,0 @@
-gas_meter_reading:
-  name: Gas Meter Reading
-  mode: box
-  unit_of_measurement: "m³"
-  min: 0
-  max: 99999
-  step: 0.01
-  icon: mdi:fire

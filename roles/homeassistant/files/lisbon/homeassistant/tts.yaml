@@ -1,9 +1,0 @@
-- platform: google_cloud
-  service_name: google_say
-  key_file: service-account.json
-  language: en-GB
-  gender: female
-  text_type: ssml
-
-- platform: google_translate
-  service_name: google_translate

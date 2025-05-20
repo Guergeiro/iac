@@ -1,1 +1,0 @@
-clone_directory: "{{ base_directory}}/tmux/tmux"

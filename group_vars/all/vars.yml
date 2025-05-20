@@ -1,7 +1,0 @@
-hostname: "{{ inventory_hostname }}"
-timezone: "Europe/Lisbon"
-ntp_timezone: "{{ timezone }}"
-locale: "en_US.UTF-8"
-keyboard_layout: "us"
-username: "breno"
-uid: "1000"

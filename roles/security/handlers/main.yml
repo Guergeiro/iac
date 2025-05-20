@@ -1,4 +1,0 @@
-- name: restart endlessh
-  service:
-    name: endlessh
-    state: restarted

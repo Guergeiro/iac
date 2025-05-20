@@ -1,5 +1,0 @@
-- name: Configure paperless network
-  community.docker.docker_network:
-    name: paperless_network
-    state: present
-    force: yes

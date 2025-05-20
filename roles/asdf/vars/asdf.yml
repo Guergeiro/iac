@@ -1,4 +1,0 @@
-environment_variables:
-  ASDF_DIR: "/home/{{ username }}/.local/share/asdf"
-  ASDF_DATA_DIR: "/home/{{ username }}/.local/share/asdf"
-  ASDF_CONFIG_FILE: "/home/{{ username }}/.local/share/asdf/.asdfrc"

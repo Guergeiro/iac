@@ -1,3 +1,0 @@
-container_name: "signal-messenger"
-host_port:
-  - "51000:8080/tcp"

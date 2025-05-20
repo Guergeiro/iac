@@ -1,6 +1,0 @@
-- sensor:
-    name: Gas Custom Sensor
-    unit_of_measurement: "m³"
-    state_class: total_increasing
-    device_class: gas
-    state: "{{ states('input_number.gas_meter_reading')|float }}"
