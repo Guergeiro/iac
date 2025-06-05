@@ -135,9 +135,13 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  nix.gc.dates = "daily";
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    awesome
+
     tlp
     acpi
     blueman
@@ -163,43 +167,6 @@
     # Create a new copy/paste command that allows too feed/read content directly to/from xclip
     copy="${pkgs.xclip}/bin/xclip -i -selection clipboard";
     paste="${pkgs.xclip}/bin/xclip -o -selection clipboard";
-  };
-
-  programs.git = {
-    enable = true;
-    config = {
-      user = {
-        email = "git@brenosalles.com";
-        name = "Breno Salles";
-        signingkey = "/home/breno/.ssh/SignKey.pub";
-      };
-      core.editor = "${pkgs.neovim}/bin/nvim";
-      merge.tool = "diffconflicts";
-      mergetool = {
-        keepBackup = false;
-        keepTemporaries = null;
-        diffconflicts = {
-          cmd = ''${pkgs.neovim}/bin/nvim \
-            -c DiffConflicts "$MERGED" "$BASE" "$LOCAL" "$REMOTE"
-          '';
-          trustExitCode = true;
-        };
-      };
-      checkout.defaultRemote = "origin";
-      commit = {
-        verbose = true;
-        gpgsign = true;
-      };
-      gpg.format = "ssh";
-      diff.tool = "customdiff";
-      difftool = {
-      prompt = false;
-      difftool.customdiff.cmd = ''${pkgs.neovim}/bin/nvim -R -f -d \
-        -c 'wincmd h' \
-        -c 'cd $GIT_PREFIX' "$REMOTE" "$LOCAL"
-      '';
-      };
-    };
   };
 
   # Some programs need SUID wrappers, can be configured further or are

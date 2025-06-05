@@ -8,7 +8,6 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
-    nix-homebrew.inputs.nixpkgs.follows = "nixpkgs";
 
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
@@ -21,21 +20,18 @@
 
     mac-app-util.url = "github:hraban/mac-app-util";
     mac-app-util.inputs.nixpkgs.follows = "nixpkgs";
-
-    # dotfiles.url = "path:../dotfiles";
-    # dotfiles.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nix-darwin, mac-app-util, nix-homebrew, homebrew-core, homebrew-cask, ... }:
   let
-    system = "x86_64-linux";
+    secrets = import ./secrets.nix;
   in
   {
     nixosConfigurations."laptop" = nixpkgs.lib.nixosSystem {
       specialArgs = {
         system = "x86_64-linux";
-        username = "breno";
-        updateCmd = "nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#laptop";
+        username = secrets.linuxUsername;
+        updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#laptop";
       };
       modules = [
         ./nixos/configuration.nix
@@ -46,7 +42,8 @@
     darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
       specialArgs = {
         system = "aarch64-darwin";
-        updateCmd = "darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#macbook";
+        username = secrets.macosUsername;
+        updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#macbook";
       };
       modules = [
         ({ config, ... }: {
@@ -57,7 +54,7 @@
         ./shared/user.nix
         mac-app-util.darwinModules.default
         nix-homebrew.darwinModules.nix-homebrew
-        {
+        ({username, ...}: {
           nix-homebrew = {
             # Install Homebrew under the default prefix
             enable = true;
@@ -79,7 +76,7 @@
             # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
             mutableTaps = false;
           };
-        }
+        })
       ];
     };
   };
