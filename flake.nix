@@ -20,17 +20,16 @@
 
     mac-app-util.url = "github:hraban/mac-app-util";
     mac-app-util.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-secrets.url = "git+file:./nix-secrets";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, mac-app-util, nix-homebrew, homebrew-core, homebrew-cask, ... }:
-  let
-    secrets = import ./secrets.nix;
-  in
+  outputs = { self, nixpkgs, nix-darwin, mac-app-util, nix-homebrew, homebrew-core, homebrew-cask, nix-secrets, ... }:
   {
     nixosConfigurations."laptop" = nixpkgs.lib.nixosSystem {
       specialArgs = {
         system = "x86_64-linux";
-        username = secrets.linuxUsername;
+        username = nix-secrets.linux.username;
         updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#laptop";
       };
       modules = [
@@ -42,7 +41,7 @@
     darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
       specialArgs = {
         system = "aarch64-darwin";
-        username = secrets.macosUsername;
+        username = nix-secrets.macos.username;
         updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#macbook";
       };
       modules = [
@@ -63,7 +62,7 @@
             enableRosetta = true;
 
             # User owning the Homebrew prefix
-            user = "my-user";
+            user = username;
 
             # Optional: Declarative tap management
             taps = {
