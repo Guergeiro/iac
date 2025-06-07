@@ -29,7 +29,7 @@
     nixosConfigurations."laptop" = nixpkgs.lib.nixosSystem {
       specialArgs = {
         system = "x86_64-linux";
-        username = nix-secrets.linux.username;
+        username = nix-secrets."x86_64-linux".username;
         updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#laptop";
       };
       modules = [
@@ -41,7 +41,7 @@
     darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
       specialArgs = {
         system = "aarch64-darwin";
-        username = nix-secrets.macos.username;
+        username = nix-secrets."aarch64-darwin".username;
         updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#macbook";
       };
       modules = [

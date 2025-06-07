@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 {
   imports =
@@ -73,12 +73,17 @@
         luaPackages.luadbi-mysql
       ];
     };
+    desktopManager.runXdgAutostartIfNone = true;
     displayManager = {
       lightdm.enable = true;
       lightdm.greeters.gtk = {
         enable = true;
         theme = {
           name = "Dracula";
+          package = pkgs.dracula-theme;
+        };
+        cursorTheme = {
+          name = "Dracula-cursors";
           package = pkgs.dracula-theme;
         };
         iconTheme = {
@@ -118,8 +123,10 @@
     };
   };
 
+  programs.dconf.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.breno = {
+  users.users.${username} = {
     isNormalUser = true;
     description = "Breno Salles";
     extraGroups = [ "networkmanager" "wheel" ];
@@ -141,6 +148,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     awesome
+    legcord
 
     tlp
     acpi
