@@ -1,4 +1,4 @@
-{ pkgs, updateCmd, ... }:
+{ pkgs, updateCmd, username, ... }:
 {
   environment.systemPackages = with pkgs; [
     alacritty
@@ -31,9 +31,16 @@
     spotify
   ];
 
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
   environment.shells = [
     pkgs.bashInteractive
   ];
+
+  users.users.${username} = {
+    shell = pkgs.bashInteractive;
+  };
 
   fonts.packages = [
     pkgs.nerd-fonts.fantasque-sans-mono

@@ -32,6 +32,30 @@
         "type": "github"
       }
     },
+    "dotfiles": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "home-manager": "home-manager",
+        "nix-secrets": "nix-secrets",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "starship-dracula": "starship-dracula"
+      },
+      "locked": {
+        "lastModified": 1749494556,
+        "narHash": "sha256-PXQ0OU3YXSYP19yyQKzxzj35LNkwuhBh7/T54qnkxvw=",
+        "ref": "refs/heads/nix",
+        "rev": "7ef55a4e998cb502b562184ad52b6a2f3d810732",
+        "revCount": 395,
+        "type": "git",
+        "url": "file:../dotfiles"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:../dotfiles"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -47,6 +71,23 @@
         "ref": "fixed-output",
         "repo": "flake-compat",
         "type": "github"
+      }
+    },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1748821116,
+        "narHash": "sha256-F82+gS044J1APL0n4hH50GYdPRv/5JWm34oCJYmVKdE=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "49f0870db23e8c1ca0b5259734a02cd9e1e371a1",
+        "type": "github"
+      },
+      "original": {
+        "id": "flake-parts",
+        "type": "indirect"
       }
     },
     "flake-utils": {
@@ -67,6 +108,47 @@
       "original": {
         "id": "flake-utils",
         "type": "indirect"
+      }
+    },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "dotfiles",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1749243446,
+        "narHash": "sha256-P1gumhZN5N9q+39ndePHYrtwOwY1cGx+VoXGl+vTm7A=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "2d7d65f65b61fdfce23278e59ca266ddd0ef0a36",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "home-manager_2": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1749483884,
+        "narHash": "sha256-HdyfdVx0NbgrVtLY4lXdX9X/YE3PZjGZFnSyoAy1GJc=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "74d196c9943a67908d1883f61154e594d03863e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
       }
     },
     "homebrew-cask": {
@@ -179,6 +261,21 @@
         "url": "file:./nix-secrets"
       }
     },
+    "nix-secrets_2": {
+      "locked": {
+        "lastModified": 1749312363,
+        "narHash": "sha256-lqYtgaZ9tmw+upFVILSpGqiIw7BwAfZounuVqCMIHno=",
+        "ref": "refs/heads/master",
+        "rev": "6a20354bbcba6ac0e922a502ea673852667c7b64",
+        "revCount": 18,
+        "type": "git",
+        "url": "file:./nix-secrets"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:./nix-secrets"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1749143949,
@@ -195,15 +292,48 @@
         "type": "github"
       }
     },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1748740939,
+        "narHash": "sha256-rQaysilft1aVMwF14xIdGS3sj1yHlI6oKQNBRTF40cc=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "656a64127e9d791a334452c6b6606d17539476e2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
+        "dotfiles": "dotfiles",
+        "home-manager": "home-manager_2",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
         "mac-app-util": "mac-app-util",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
-        "nix-secrets": "nix-secrets",
+        "nix-secrets": "nix-secrets_2",
         "nixpkgs": "nixpkgs"
+      }
+    },
+    "starship-dracula": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1718871491,
+        "narHash": "sha256-W5FTRNbHNXJIcgOgiqvP9lyM7hiCh0rHlJ0A8JdkaE4=",
+        "owner": "dracula",
+        "repo": "starship",
+        "rev": "bd1383b8a078d7d6829fa71a8e7c4119ae77e962",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dracula",
+        "repo": "starship",
+        "type": "github"
       }
     },
     "systems": {

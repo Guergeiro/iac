@@ -139,9 +139,6 @@
     ];
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   nix.gc.dates = "daily";
 
   # List packages installed in system profile. To search, run:
