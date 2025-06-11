@@ -27,73 +27,75 @@
 
     dotfiles.url = "git+file:../dotfiles";
     dotfiles.inputs.nixpkgs.follows = "nixpkgs";
+    dotfiles.inputs.home-manager.follows = "home-manager";
+    dotfiles.inputs.nix-secrets.follows = "nix-secrets";
+
+    starship-dracula = {
+      url = "github:dracula/starship";
+      flake = false;
+    };
 
     nix-secrets.url = "git+file:./nix-secrets";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, dotfiles, mac-app-util, nix-homebrew, homebrew-core, homebrew-cask, nix-secrets, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, dotfiles, starship-dracula, mac-app-util, nix-homebrew, homebrew-core, homebrew-cask, nix-secrets, ... }@inputs:
+  let
+    specialArgs = system: {
+      system = system;
+      username = nix-secrets.${system}.username;
+    };
+
+    forAllSystems = function:
+      nixpkgs.lib.genAttrs [
+        "x86_64-linux"
+        "aarch64-darwin"
+      ] (system: function nixpkgs.legacyPackages.${system});
+
+    homeCfg = ({ pkgs, system, username, ... }:
+    let
+      homeCfg = dotfiles.mkHomeModules pkgs;
+    in
+    {
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        extraSpecialArgs = {
+          username = username;
+          system = system;
+          standalone = false;
+          inherit starship-dracula;
+        };
+        users.${username}.imports = homeCfg;
+      };
+    });
+  in
   {
     nixosConfigurations."laptop" = nixpkgs.lib.nixosSystem {
-      specialArgs = {
-        system = "x86_64-linux";
-        username = nix-secrets."x86_64-linux".username;
+      specialArgs = specialArgs "x86_64-linux" // {
         updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#laptop";
-        inherit inputs;
       };
       modules = [
         ./nixos/configuration.nix
         ./shared/system.nix
         home-manager.nixosModules.home-manager
-        ({ pkgs, system, username, ... }:
-        let
-          dotfilesHmData = dotfiles.homeManagerModules.${system};
-        in {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            # Moved extraSpecialArgs here, making them available to all users in this system
-            extraSpecialArgs = dotfilesHmData.extraSpecialArgs;
-            users.${username} = {
-              imports = dotfilesHmData.modules;
-              # No extraSpecialArgs here anymore
-            };
-          };
-        })
+        homeCfg
       ];
     };
     darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
-      specialArgs = {
-        system = "aarch64-darwin";
-        username = nix-secrets."aarch64-darwin".username;
+      specialArgs = specialArgs "aarch64-darwin" // {
         updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#macbook";
-        inherit inputs;
       };
       modules = [
+        ./darwin/configuration.nix
+        ./shared/system.nix
+        home-manager.darwinModules.home-manager
+        homeCfg
+        mac-app-util.darwinModules.default
         ({ config, ... }: {
           homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
         })
-        ./darwin/configuration.nix
-        ./shared/system.nix
-        mac-app-util.darwinModules.default
         nix-homebrew.darwinModules.nix-homebrew
-        # Import Home Manager with dotfiles
-        home-manager.darwinModules.home-manager
-        ({ pkgs, system, username, ... }:
-        let
-          dotfilesHmData = dotfiles.homeManagerModules.${system};
-        in {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            # Moved extraSpecialArgs here, making them available to all users in this system
-            extraSpecialArgs = dotfilesHmData.extraSpecialArgs;
-            users.${username} = {
-              imports = dotfilesHmData.modules;
-              # No extraSpecialArgs here anymore
-            };
-          };
-        })
-        ({username, ...}: {
+        ({ username, ...}: {
           nix-homebrew = {
             # Install Homebrew under the default prefix
             enable = true;
