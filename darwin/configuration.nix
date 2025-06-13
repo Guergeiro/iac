@@ -78,22 +78,11 @@
     Minute = 0;
   };
 
-  programs = {
-    zsh = {
-      enable = true;
-    };
-    bash = {
-      enable = true;
-      completion.enable = true;
-    };
-    direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-    };
-    tmux = {
-      enable = true;
-    };
-  };
+  programs.bash.enable = true;
+
+  users.knownUsers = [ "${username}" ];
+  users.users.${username}.uid = 501;
+
   services = {
     aerospace = {
       enable = true;

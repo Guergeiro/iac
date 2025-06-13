@@ -38,9 +38,23 @@
     pkgs.bashInteractive
   ];
 
+  environment.interactiveShellInit = ''
+  # Make sure /run/current-system/sw/bin is the first thing in $PATH
+  PATH="/run/current-system/sw/bin:$PATH";
+  '';
+
   users.users.${username} = {
     shell = pkgs.bashInteractive;
+    home = if pkgs.stdenv.isDarwin
+      then "/Users/${username}"
+      else "/home/${username}";
   };
+
+  programs.zsh.enable = true;
+  programs.bash.completion.enable = true;
+  programs.direnv.enable = true;
+  programs.direnv.nix-direnv.enable = true;
+  programs.tmux.enable = true;
 
   fonts.packages = [
     pkgs.nerd-fonts.fantasque-sans-mono

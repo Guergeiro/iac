@@ -25,7 +25,7 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    dotfiles.url = "git+file:../dotfiles";
+    dotfiles.url = "git+file:../dotfiles?ref=nix";
     dotfiles.inputs.nixpkgs.follows = "nixpkgs";
     dotfiles.inputs.home-manager.follows = "home-manager";
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
@@ -43,13 +43,8 @@
     specialArgs = system: {
       system = system;
       username = nix-secrets.${system}.username;
+      inherit self;
     };
-
-    forAllSystems = function:
-      nixpkgs.lib.genAttrs [
-        "x86_64-linux"
-        "aarch64-darwin"
-      ] (system: function nixpkgs.legacyPackages.${system});
 
     homeCfg = ({ pkgs, system, username, ... }:
     let
