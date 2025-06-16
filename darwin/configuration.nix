@@ -10,10 +10,21 @@
     onActivation.cleanup = "zap";
     onActivation.autoUpdate = true;
     onActivation.upgrade = true;
-    casks = [
+    brews = [
       "docker"
+      {
+        name = "colima";
+        restart_service = true;
+        start_service = true;
+      }
     ];
   };
+
+  environment.interactiveShellInit = ''
+  # Make sure /run/current-system/sw/bin is the first thing in $PATH
+  PATH="/run/current-system/sw/bin:$PATH";
+  DOCKER_HOST="unix://$HOME/.colima/docker.sock"
+  '';
 
   security.pam.services.sudo_local = {
     reattach = true;

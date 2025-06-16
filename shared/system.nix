@@ -38,10 +38,6 @@
     pkgs.bashInteractive
   ];
 
-  environment.interactiveShellInit = ''
-  # Make sure /run/current-system/sw/bin is the first thing in $PATH
-  PATH="/run/current-system/sw/bin:$PATH";
-  '';
 
   users.users.${username} = {
     shell = pkgs.bashInteractive;
