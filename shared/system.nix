@@ -19,6 +19,8 @@
     nodejs_22
     librewolf
     openssh
+    python3
+    python3Packages.passlib
     ripgrep
     starship
     stow
