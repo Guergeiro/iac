@@ -129,7 +129,7 @@
   users.users.${username} = {
     isNormalUser = true;
     description = "Breno Salles";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
       stremio
       xclip
@@ -137,6 +137,24 @@
       thunderbird
       spotify
     ];
+  };
+
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+    daemon.settings = {
+      live-restore = true;
+      ipv6 = true;
+      fixed-cidr-v6 = "2001:818:dba0:5c00::/56";
+    };
+    autoPrune = {
+      enable = true;
+      flags = [ "--all" ];
+    };
+  };
+
+  virtualisation.oci-containers = {
+    backend = "docker";
   };
 
   nix.gc.dates = "daily";
@@ -151,6 +169,7 @@
     acpi
     blueman
     brightnessctl
+    docker
     lightlocker
 
     reaction
@@ -159,8 +178,12 @@
     wireguard-tools
     wg-netmanager
 
+    zip
+    unzip
+
     pavucontrol
     xfce.thunar
+    xfce.thunar-archive-plugin
     xfce.xfce4-battery-plugin
     xfce.xfce4-taskmanager
     xfce.xfce4-screenshooter

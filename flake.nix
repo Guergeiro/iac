@@ -30,15 +30,10 @@
     dotfiles.inputs.home-manager.follows = "home-manager";
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
 
-    starship-dracula = {
-      url = "github:dracula/starship";
-      flake = false;
-    };
-
     nix-secrets.url = "git+file:./nix-secrets";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, dotfiles, starship-dracula, mac-app-util, nix-homebrew, homebrew-core, homebrew-cask, nix-secrets, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, dotfiles, mac-app-util, nix-homebrew, homebrew-core, homebrew-cask, nix-secrets, ... }@inputs:
   let
     specialArgs = system: {
       system = system;
@@ -57,10 +52,8 @@
         extraSpecialArgs = {
           username = username;
           system = system;
-          standalone = false;
-          inherit starship-dracula;
-        };
-        users.${username}.imports = homeCfg;
+        } // homeCfg.extraSpecialArgs;
+        users.${username}.imports = homeCfg.modules;
       };
     });
   in

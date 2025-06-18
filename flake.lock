@@ -47,11 +47,11 @@
         "starship-dracula": "starship-dracula"
       },
       "locked": {
-        "lastModified": 1749823627,
-        "narHash": "sha256-iRMgbDr/vyDf0YUie2Y5FQ+2MydetKashRtru0rcJ9M=",
+        "lastModified": 1750158221,
+        "narHash": "sha256-4IMkeFFdiPpQrH7ftyJJwsTZ0EIhjbrqpav6yjNFKmA=",
         "ref": "nix",
-        "rev": "2296283a599b1688112cd6feb2084638638d67ab",
-        "revCount": 400,
+        "rev": "425e2204f720bb49a737985f7bdfc42afc3611a0",
+        "revCount": 402,
         "type": "git",
         "url": "file:../dotfiles"
       },
@@ -286,8 +286,7 @@
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nix-secrets": "nix-secrets",
-        "nixpkgs": "nixpkgs",
-        "starship-dracula": "starship-dracula_2"
+        "nixpkgs": "nixpkgs"
       }
     },
     "starship-dracula": {
@@ -298,22 +297,6 @@
         "owner": "dracula",
         "repo": "starship",
         "rev": "bd1383b8a078d7d6829fa71a8e7c4119ae77e962",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dracula",
-        "repo": "starship",
-        "type": "github"
-      }
-    },
-    "starship-dracula_2": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1749634780,
-        "narHash": "sha256-gFnRdz+OBsIWK78ERACwv/Y5RUwpbPX3gGnJdjJVJo4=",
-        "owner": "dracula",
-        "repo": "starship",
-        "rev": "920e9f46ccc25beee15ed7fe0baddabdfeaaf92a",
         "type": "github"
       },
       "original": {
