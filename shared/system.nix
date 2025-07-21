@@ -16,11 +16,12 @@
     git
     neovim
     nix-direnv
+    nixfmt-rfc-style
     nodejs_22
     librewolf
     openssh
+    openssl
     python3
-    python3Packages.passlib
     ripgrep
     starship
     stow

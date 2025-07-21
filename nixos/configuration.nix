@@ -164,12 +164,15 @@
   environment.systemPackages = with pkgs; [
     awesome
     legcord
+    google-lighthouse
+    galculator
 
     tlp
     acpi
     blueman
     brightnessctl
     docker
+    gimp3
     lightlocker
 
     reaction
