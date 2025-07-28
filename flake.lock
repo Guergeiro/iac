@@ -47,11 +47,11 @@
         "starship-dracula": "starship-dracula"
       },
       "locked": {
-        "lastModified": 1753134469,
-        "narHash": "sha256-rle6C5l/aC6RJglGwcAyW0BSWkBlTJ5blXiV4DX9s2I=",
+        "lastModified": 1753211041,
+        "narHash": "sha256-x9hVPB0LKefQjr17k6/fin+HZaeXcyIxh+YS3JKHpM0=",
         "owner": "guergeiro",
         "repo": "dotfiles",
-        "rev": "b3e628d1aa7cffaa5d2fe7b4d4267e8365120b4f",
+        "rev": "9a478a9692f6f772ffb0515a3bf602339dc3faf4",
         "type": "github"
       },
       "original": {
