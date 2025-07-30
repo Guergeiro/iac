@@ -130,13 +130,6 @@
     isNormalUser = true;
     description = "Breno Salles";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [
-      stremio
-      xclip
-      signal-desktop
-      thunderbird
-      spotify
-    ];
   };
 
   virtualisation.docker = {
@@ -166,13 +159,17 @@
     legcord
     google-lighthouse
     galculator
+    ungoogled-chromium
+    gimp3
+    stremio
+    xclip
+    signal-desktop
+    thunderbird
 
     tlp
     acpi
     blueman
     brightnessctl
-    docker
-    gimp3
     lightlocker
 
     reaction
