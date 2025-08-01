@@ -3,6 +3,8 @@
 
   environment.systemPackages = with pkgs; [
     aerospace
+    scrcpy
+
   ];
 
   homebrew = {
@@ -17,6 +19,10 @@
         restart_service = true;
         start_service = true;
       }
+      # "sst/tap/opencode"
+    ];
+    casks = [
+      "ungoogled-chromium"
     ];
   };
 
@@ -74,6 +80,7 @@
     };
     loginwindow.GuestEnabled = false;
     menuExtraClock.Show24Hour = true;
+    universalaccess.reduceMotion = true;
   };
 
   system.keyboard = {
@@ -122,6 +129,19 @@
           alt-shift-r = "reload-config";
           alt-f = "layout floating tiling";
           f11 = "macos-native-fullscreen";
+        };
+        on-focused-monitor-changed = ["move-mouse monitor-lazy-center"];
+        workspace-to-monitor-force-assignment = {
+          "1" = "main";
+          "2" = "main";
+          "3" = "main";
+          "4" = "main";
+          "5" = "main";
+          "6" = "main";
+          "7" = "main";
+          "8" = "main";
+          "9" = "main";
+          "10" = "secondary";
         };
       };
     };

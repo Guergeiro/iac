@@ -14,6 +14,7 @@
     docker
     gcc
     git
+    localsend
     neovim
     nix-direnv
     nixfmt-rfc-style
@@ -28,6 +29,7 @@
     gnutar
     tmux
     trash-cli
+    tree-sitter
     vim
 
     bruno
