@@ -25,7 +25,7 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    dotfiles.url = "github:guergeiro/dotfiles?ref=nix";
+    dotfiles.url = "github:guergeiro/dotfiles";
     dotfiles.inputs.nixpkgs.follows = "nixpkgs";
     dotfiles.inputs.home-manager.follows = "home-manager";
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
