@@ -1,9 +1,0 @@
-base_directory: "/home/{{ username }}/Documents"
-
-system_set_hostname: no
-system_reboot: no
-
-docker_users:
-  - "{{ username }}"
-docker_generate_network: no
-docker_stop_containers: no

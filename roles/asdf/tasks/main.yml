@@ -1,9 +1,0 @@
-- name: Install/Update asdf
-  include_tasks: install.yml
-  when: asdf_skip_update | default(False) == False
-
-- name: Install plugin
-  include_tasks: plugins.yml
-  when:
-    - asdf_plugins is defined
-    - asdf_plugins|length > 0

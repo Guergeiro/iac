@@ -1,8 +1,0 @@
-extra_packages:
-  - bat
-  - ripgrep
-  - trash-cli
-  - xclip
-  - unzip
-  - zip
-  - python3

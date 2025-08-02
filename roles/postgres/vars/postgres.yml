@@ -1,5 +1,0 @@
-container_name: "postgres"
-host_port:
-  - "5432:5432/tcp"
-postgres_user: "postgres"
-postgres_password: "postgres"
