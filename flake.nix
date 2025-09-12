@@ -30,6 +30,9 @@
     dotfiles.inputs.home-manager.follows = "home-manager";
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
 
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-secrets = {
       url = "git+file:./nix-secrets";
       flake = false;
@@ -48,6 +51,7 @@
       homebrew-core,
       homebrew-cask,
       nix-secrets,
+      disko,
       ...
     }@inputs:
     let
@@ -67,7 +71,7 @@
           ...
         }:
         let
-          homeCfg = dotfiles.mkHomeModules pkgs system secrets nix-secrets;
+          homeCfg = dotfiles.mkHomeModules pkgs system secrets nix-secrets dotfiles;
         in
         {
           home-manager = {
@@ -78,26 +82,37 @@
           };
         }
       );
+
+      machines = [
+        (
+          let
+            hostname = "mango";
+            system = "x86_64-linux";
+          in
+          {
+            specialArgs = {
+              updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
+              username = secrets.${system}.username;
+              inherit self system hostname;
+            };
+            modules = [
+              ./workstation/nixos/configuration.nix
+              ./workstation/shared/system.nix
+              home-manager.nixosModules.home-manager
+              homeCfg
+            ];
+          }
+        )
+      ];
     in
     {
-      nixosConfigurations."laptop" = nixpkgs.lib.nixosSystem {
-        specialArgs = specialArgs "x86_64-linux" // {
-          updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#laptop";
-        };
-        modules = [
-          ./nixos/configuration.nix
-          ./shared/system.nix
-          home-manager.nixosModules.home-manager
-          homeCfg
-        ];
-      };
       darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
         specialArgs = specialArgs "aarch64-darwin" // {
           updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#macbook";
         };
         modules = [
-          ./darwin/configuration.nix
-          ./shared/system.nix
+          ./workstation/darwin/configuration.nix
+          ./workstation/shared/system.nix
           home-manager.darwinModules.home-manager
           homeCfg
           mac-app-util.darwinModules.default
@@ -136,5 +151,14 @@
           )
         ];
       };
+      nixosConfigurations = builtins.listToAttrs (
+        map (machine: {
+          name = machine.specialArgs.hostname;
+          value = nixpkgs.lib.nixosSystem {
+            specialArgs = machine.specialArgs;
+            modules = machine.modules;
+          };
+        }) machines
+      );
     };
 }

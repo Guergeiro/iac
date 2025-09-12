@@ -2,19 +2,25 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, username, ... }:
+{
+  config,
+  pkgs,
+  username,
+  hostname,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "breno-laptop"; # Define your hostname.
+  networking.hostName = hostname; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -107,7 +113,7 @@
 
   services.pipewire = {
     enable = false;
-  #  pulse.enable = true;
+    #  pulse.enable = true;
   };
 
   services.libinput = {
@@ -129,7 +135,11 @@
   users.users.${username} = {
     isNormalUser = true;
     description = "Breno Salles";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "docker"
+    ];
   };
 
   virtualisation.docker = {
@@ -161,7 +171,6 @@
     galculator
     ungoogled-chromium
     gimp3
-    stremio
     xclip
     signal-desktop
     thunderbird
@@ -193,8 +202,8 @@
 
   environment.shellAliases = {
     # Create a new copy/paste command that allows too feed/read content directly to/from xclip
-    copy="${pkgs.xclip}/bin/xclip -i -selection clipboard";
-    paste="${pkgs.xclip}/bin/xclip -o -selection clipboard";
+    copy = "${pkgs.xclip}/bin/xclip -i -selection clipboard";
+    paste = "${pkgs.xclip}/bin/xclip -o -selection clipboard";
   };
 
   # Some programs need SUID wrappers, can be configured further or are
