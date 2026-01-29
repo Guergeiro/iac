@@ -19,9 +19,6 @@
       flake = false;
     };
 
-    mac-app-util.url = "github:hraban/mac-app-util";
-    mac-app-util.inputs.nixpkgs.follows = "nixpkgs";
-
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -46,7 +43,6 @@
       nix-darwin,
       home-manager,
       dotfiles,
-      mac-app-util,
       nix-homebrew,
       homebrew-core,
       homebrew-cask,
@@ -115,7 +111,6 @@
           ./workstation/shared/system.nix
           home-manager.darwinModules.home-manager
           homeCfg
-          mac-app-util.darwinModules.default
           (
             { config, ... }:
             {

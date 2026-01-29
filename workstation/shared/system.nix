@@ -17,11 +17,12 @@
     localsend
     neovim
     nix-direnv
-    nixfmt-rfc-style
+    nixfmt
     nodejs_22
     librewolf
     openssh
     openssl
+    opencode
     python3
     ripgrep
     starship

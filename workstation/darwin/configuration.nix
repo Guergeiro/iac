@@ -1,10 +1,18 @@
-{ self, pkgs, username, ... }:
+{
+  self,
+  pkgs,
+  username,
+  ...
+}:
 {
 
   environment.systemPackages = with pkgs; [
     aerospace
     scrcpy
 
+    keepassxc
+    keystore-explorer
+    gh
   ];
 
   homebrew = {
@@ -19,17 +27,17 @@
         restart_service = true;
         start_service = true;
       }
-      # "sst/tap/opencode"
     ];
     casks = [
       "ungoogled-chromium"
+      "karabiner-elements"
     ];
   };
 
   environment.interactiveShellInit = ''
-  # Make sure /run/current-system/sw/bin is the first thing in $PATH
-  PATH="/run/current-system/sw/bin:$PATH";
-  DOCKER_HOST="unix://$HOME/.colima/docker.sock"
+    # Make sure /run/current-system/sw/bin is the first thing in $PATH
+    PATH="/run/current-system/sw/bin:$PATH";
+    DOCKER_HOST="unix://$HOME/.colima/defaul/docker.sock"
   '';
 
   security.pam.services.sudo_local = {
@@ -81,15 +89,35 @@
     loginwindow.GuestEnabled = false;
     menuExtraClock.Show24Hour = true;
     universalaccess.reduceMotion = true;
+    universalaccess.reduceTransparency = true;
   };
 
   system.keyboard = {
-    enableKeyMapping = true;
-    nonUS.remapTilde = true;
+    enableKeyMapping = false;
+    # nonUS.remapTilde = true;
+    # swapLeftCtrlAndFn = true;
   };
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = "aarch64-darwin";
+
+  networking = {
+    knownNetworkServices = [
+
+      "Realtek LAN"
+      "Dell Universal Dock D6000"
+      "USB 10/100/1000 LAN"
+      "Thunderbolt Bridge"
+      "Wi-Fi"
+      "iPhone USB"
+    ];
+    dns = [
+      "1.1.1.1"
+      "1.0.0.1"
+      "2606:4700:4700::1111"
+      "2606:4700:4700::1001"
+    ];
+  };
 
   nix.gc.interval = {
     Hour = 0;
@@ -130,7 +158,7 @@
           alt-f = "layout floating tiling";
           f11 = "macos-native-fullscreen";
         };
-        on-focused-monitor-changed = ["move-mouse monitor-lazy-center"];
+        on-focused-monitor-changed = [ "move-mouse monitor-lazy-center" ];
         workspace-to-monitor-force-assignment = {
           "1" = "main";
           "2" = "main";
