@@ -10,6 +10,7 @@
     aerospace
     scrcpy
 
+    vscode
     keepassxc
     keystore-explorer
     gh
@@ -20,14 +21,7 @@
     onActivation.cleanup = "zap";
     onActivation.autoUpdate = true;
     onActivation.upgrade = true;
-    brews = [
-      "docker"
-      {
-        name = "colima";
-        restart_service = true;
-        start_service = true;
-      }
-    ];
+    brews = [];
     casks = [
       "ungoogled-chromium"
       "karabiner-elements"
@@ -37,7 +31,6 @@
   environment.interactiveShellInit = ''
     # Make sure /run/current-system/sw/bin is the first thing in $PATH
     PATH="/run/current-system/sw/bin:$PATH";
-    DOCKER_HOST="unix://$HOME/.colima/defaul/docker.sock"
   '';
 
   security.pam.services.sudo_local = {
