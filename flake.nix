@@ -53,10 +53,10 @@
     let
       secrets = builtins.fromJSON (builtins.readFile "${nix-secrets}/vars.json");
 
-      specialArgs = system: {
-        system = system;
+      specialArgs = system: hostname: updateCmd: {
         username = secrets.${system}.username;
-        inherit self;
+        envVars = secrets.${system}.environment or {};
+        inherit self system hostname updateCmd;
       };
 
       homeCfg = (
@@ -79,73 +79,90 @@
         }
       );
 
-      machines = [
+      linuxModules = [
+        ./workstation/nixos/configuration.nix
+        ./workstation/shared/system.nix
+        home-manager.nixosModules.home-manager
+        homeCfg
+      ];
+      darwinModules = [
+        ./workstation/darwin/configuration.nix
+        ./workstation/shared/system.nix
+        home-manager.darwinModules.home-manager
+        homeCfg
+        (
+          { config, ... }:
+          {
+            homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
+          }
+        )
+        nix-homebrew.darwinModules.nix-homebrew
+        (
+          { username, ... }:
+          {
+            nix-homebrew = {
+              # Install Homebrew under the default prefix
+              enable = true;
+
+              # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
+              enableRosetta = true;
+
+              # User owning the Homebrew prefix
+              user = username;
+
+              # Optional: Declarative tap management
+              taps = {
+                "homebrew/homebrew-core" = homebrew-core;
+                "homebrew/homebrew-cask" = homebrew-cask;
+              };
+
+              # Optional: Enable fully-declarative tap management
+              #
+              # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+              mutableTaps = false;
+            };
+          }
+        )
+      ];
+
+      linuxMachines = [
         (
           let
-            hostname = "mango";
             system = "x86_64-linux";
+            hostname = "mango";
+            updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
           in
           {
-            specialArgs = {
-              updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
-              username = secrets.${system}.username;
-              inherit self system hostname;
-            };
-            modules = [
-              ./workstation/nixos/configuration.nix
-              ./workstation/shared/system.nix
-              home-manager.nixosModules.home-manager
-              homeCfg
-            ];
+            specialArgs = specialArgs system hostname updateCmd;
+            modules = linuxModules;
+          }
+        )
+      ];
+
+      darwinMachines = [
+        (
+          let
+            system = "aarch64-darwin";
+            hostname = "macbook";
+            updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
+          in
+          {
+            specialArgs = specialArgs system hostname updateCmd;
+            modules = darwinModules;
           }
         )
       ];
     in
     {
-      darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
-        specialArgs = specialArgs "aarch64-darwin" // {
-          updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#macbook";
-        };
-        modules = [
-          ./workstation/darwin/configuration.nix
-          ./workstation/shared/system.nix
-          home-manager.darwinModules.home-manager
-          homeCfg
-          (
-            { config, ... }:
-            {
-              homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
-            }
-          )
-          nix-homebrew.darwinModules.nix-homebrew
-          (
-            { username, ... }:
-            {
-              nix-homebrew = {
-                # Install Homebrew under the default prefix
-                enable = true;
-
-                # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
-                enableRosetta = true;
-
-                # User owning the Homebrew prefix
-                user = username;
-
-                # Optional: Declarative tap management
-                taps = {
-                  "homebrew/homebrew-core" = homebrew-core;
-                  "homebrew/homebrew-cask" = homebrew-cask;
-                };
-
-                # Optional: Enable fully-declarative tap management
-                #
-                # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-                mutableTaps = false;
-              };
-            }
-          )
-        ];
-      };
+      darwinConfigurations = builtins.listToAttrs (
+        map (machine: {
+          name = machine.specialArgs.hostname;
+          value = nix-darwin.lib.darwinSystem {
+            specialArgs = machine.specialArgs;
+            modules = machine.modules;
+          };
+        }) darwinMachines
+      );
       nixosConfigurations = builtins.listToAttrs (
         map (machine: {
           name = machine.specialArgs.hostname;
@@ -153,7 +170,7 @@
             specialArgs = machine.specialArgs;
             modules = machine.modules;
           };
-        }) machines
+        }) linuxMachines
       );
     };
 }

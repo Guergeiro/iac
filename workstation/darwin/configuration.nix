@@ -96,7 +96,6 @@
 
   networking = {
     knownNetworkServices = [
-
       "Realtek LAN"
       "Dell Universal Dock D6000"
       "USB 10/100/1000 LAN"

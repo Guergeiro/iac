@@ -1,4 +1,11 @@
-{ pkgs, updateCmd, username, ... }:
+{
+  pkgs,
+  updateCmd,
+  username,
+  envVars,
+  lib,
+  ...
+}:
 {
   environment.systemPackages = with pkgs; [
     alacritty
@@ -44,12 +51,9 @@
     pkgs.bashInteractive
   ];
 
-
   users.users.${username} = {
     shell = pkgs.bashInteractive;
-    home = if pkgs.stdenv.isDarwin
-      then "/Users/${username}"
-      else "/home/${username}";
+    home = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
   };
 
   programs.zsh.enable = true;
@@ -83,8 +87,11 @@
     upgrade = "sudo nix flake update --flake $HOME/Documents/guergeiro/iac";
   };
 
-  environment.variables = {
-    EDITOR = "${pkgs.neovim}/bin/nvim";
-    MANPAGER="sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
-  };
+  environment.variables = lib.mkMerge [
+    {
+      EDITOR = "${pkgs.neovim}/bin/nvim";
+      MANPAGER = "sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
+    }
+    envVars
+  ];
 }
