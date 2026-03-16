@@ -9,7 +9,14 @@
   hostname,
   ...
 }:
-
+let
+  nameservers = [
+    "1.1.1.1"
+    "1.0.0.1"
+    "2606:4700:4700::1111"
+    "2606:4700:4700::1001"
+  ];
+in
 {
   imports = [
     # Include the results of the hardware scan.
@@ -28,20 +35,19 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   networking.resolvconf.dnsExtensionMechanism = false;
-  networking.nameservers = [
-    "1.1.1.1"
-    "1.0.0.1"
-    "2606:4700:4700::1111"
-    "2606:4700:4700::1001"
-  ];
+  networking.nameservers = nameservers;
 
   # Enable networking
   networking.networkmanager = {
     enable = true;
     ethernet.macAddress = "permanent";
     wifi.macAddress = "random";
+    insertNameservers = nameservers;
   };
+  programs.nm-applet.enable = true;
+  services.wg-netmanager.enable = true;
 
+  # Enable bluetooth
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -51,6 +57,7 @@
       };
     };
   };
+  services.blueman.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Lisbon";
@@ -72,32 +79,14 @@
 
   services.xserver = {
     enable = true;
-    windowManager.awesome = {
+    windowManager.qtile = {
       enable = true;
-      luaModules = with pkgs; [
-        luaPackages.luarocks
-        luaPackages.luadbi-mysql
-      ];
+      extraPackages =
+        python3Packages: with python3Packages; [
+          qtile-extras
+        ];
     };
     desktopManager.runXdgAutostartIfNone = true;
-    displayManager = {
-      lightdm.enable = true;
-      lightdm.greeters.gtk = {
-        enable = true;
-        theme = {
-          name = "Dracula";
-          package = pkgs.dracula-theme;
-        };
-        cursorTheme = {
-          name = "Dracula-cursors";
-          package = pkgs.dracula-theme;
-        };
-        iconTheme = {
-          name = "Dracula";
-          package = pkgs.dracula-icon-theme;
-        };
-      };
-    };
     # Configure keymap in X11
     xkb = {
       layout = "us,us(intl)";
@@ -105,11 +94,18 @@
     };
   };
 
-  services.displayManager = {
-    defaultSession = "none+awesome";
-  };
+  services.displayManager.ly.enable = true;
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.ly.enableGnomeKeyring = true;
 
   services.pulseaudio.enable = true;
+
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="${pkgs.coreutils}/bin/chgrp video /sys/class/backlight/%k/brightness"
+    ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", RUN+="${pkgs.coreutils}/bin/chmod g+w /sys/class/backlight/%k/brightness"
+  '';
+
+  services.upower.enable = true;
 
   services.pipewire = {
     enable = false;
@@ -131,6 +127,21 @@
 
   programs.dconf.enable = true;
 
+  # Thunar config
+  programs.xfconf.enable = true;
+  programs.thunar = {
+    enable = true;
+    plugins = with pkgs; [
+      thunar-archive-plugin
+      thunar-volman
+      thunar-media-tags-plugin
+    ];
+  };
+  services.tumbler.enable = true; # Thumbnail support for images
+  # enable usb automount
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${username} = {
     isNormalUser = true;
@@ -139,6 +150,7 @@
       "networkmanager"
       "wheel"
       "docker"
+      "video"
     ];
   };
 
@@ -149,6 +161,7 @@
       live-restore = true;
       ipv6 = true;
       fixed-cidr-v6 = "2001:818:dba0:5c00::/56";
+      ip-forward-no-drop = true;
     };
     autoPrune = {
       enable = true;
@@ -165,46 +178,32 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    awesome
     legcord
     google-lighthouse
-    galculator
     ungoogled-chromium
     gimp3
     xclip
     signal-desktop
     thunderbird
 
-    tlp
     acpi
-    blueman
     brightnessctl
-    lightlocker
+
+    rustdesk
 
     reaction
-    networkmanager
-    networkmanagerapplet
-    wireguard-tools
-    wg-netmanager
 
     zip
     unzip
 
     pavucontrol
-    xfce.thunar
-    xfce.thunar-archive-plugin
-    xfce.xfce4-battery-plugin
-    xfce.xfce4-taskmanager
-    xfce.xfce4-screenshooter
-    xfce.xfce4-pulseaudio-plugin
-    xfce.xfce4-power-manager
+    xfce4-taskmanager
+    xfce4-screenshooter
+    xfce4-power-manager
+    wl-clipboard
   ];
 
-  environment.shellAliases = {
-    # Create a new copy/paste command that allows too feed/read content directly to/from xclip
-    copy = "${pkgs.xclip}/bin/xclip -i -selection clipboard";
-    paste = "${pkgs.xclip}/bin/xclip -o -selection clipboard";
-  };
+  environment.shellAliases = {};
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

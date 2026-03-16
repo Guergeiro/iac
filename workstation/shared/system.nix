@@ -21,6 +21,7 @@
     docker
     gcc
     git
+    git-absorb
     localsend
     neovim
     nix-direnv
