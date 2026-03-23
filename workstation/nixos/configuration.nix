@@ -97,6 +97,32 @@ in
   services.displayManager.ly.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.ly.enableGnomeKeyring = true;
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-wlr
+      pkgs.xdg-desktop-portal-gnome
+    ];
+    config = {
+      common = {
+        default = [ "gtk" ];
+      };
+
+      qtile = {
+        default = [ "gtk" ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+      };
+
+      qtile-wayland = {
+        default = [ "gtk" ];
+        "org.freedesktop.impl.portal.Screenshot" = [ "wlr" ];
+        "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+      };
+    };
+  };
 
   services.pulseaudio.enable = true;
 
@@ -203,7 +229,7 @@ in
     wl-clipboard
   ];
 
-  environment.shellAliases = {};
+  environment.shellAliases = { };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

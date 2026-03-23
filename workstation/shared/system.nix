@@ -13,7 +13,6 @@
     ansible
     bashInteractive
     bash-completion
-    bat
     coreutils
     curl
     deno
@@ -23,22 +22,16 @@
     git
     git-absorb
     localsend
-    neovim
     nix-direnv
-    nixfmt
-    nodejs_22
+    nodejs
     librewolf
     openssh
     openssl
     opencode
     python3
-    ripgrep
-    starship
-    stow
     gnutar
     tmux
     trash-cli
-    tree-sitter
     vim
 
     bruno
