@@ -55,11 +55,11 @@
         "sublime-dracula": "sublime-dracula"
       },
       "locked": {
-        "lastModified": 1774563134,
-        "narHash": "sha256-Z4Qv9mPeNGsRIB6s2OQEO0cSDnZpZA0/sMYI/30Mlhg=",
+        "lastModified": 1774619908,
+        "narHash": "sha256-c03Zt+YQuP8vM3talTsvcERbabQt4qU5RLt75c4/4WI=",
         "owner": "guergeiro",
         "repo": "dotfiles",
-        "rev": "d1849f6f7f088dcdf3dba258db582f37e305bd9a",
+        "rev": "40836afe43507bd61596fc2324d9f1164603cbd5",
         "type": "github"
       },
       "original": {

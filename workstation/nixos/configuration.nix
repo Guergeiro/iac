@@ -229,6 +229,9 @@ in
     wl-clipboard
   ];
 
+  i18n.defaultLocale = "en_GB.UTF-8";
+  i18n.extraLocales = [ "pt_PT.UTF-8" ];
+
   environment.shellAliases = { };
 
   # Some programs need SUID wrappers, can be configured further or are

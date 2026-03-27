@@ -52,8 +52,6 @@
 
   programs.zsh.enable = true;
   programs.bash.completion.enable = true;
-  programs.direnv.enable = true;
-  programs.direnv.nix-direnv.enable = true;
   programs.tmux.enable = true;
 
   fonts.packages = [

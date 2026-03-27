@@ -10,6 +10,7 @@
     aerospace
     scrcpy
 
+    mos
     vscode
     keepassxc
     keystore-explorer
@@ -21,7 +22,7 @@
     onActivation.cleanup = "zap";
     onActivation.autoUpdate = true;
     onActivation.upgrade = true;
-    brews = [];
+    brews = [ ];
     casks = [
       "ungoogled-chromium"
       "karabiner-elements"
@@ -55,6 +56,7 @@
       "com.apple.keyboard.fnState" = true;
       "com.apple.trackpad.forceClick" = true;
       "com.apple.trackpad.trackpadCornerClickBehavior" = 1;
+      "com.apple.swipescrolldirection" = true;
     };
     trackpad = {
       TrackpadRightClick = true;
@@ -83,6 +85,7 @@
     menuExtraClock.Show24Hour = true;
     universalaccess.reduceMotion = true;
     universalaccess.reduceTransparency = true;
+    iCal."first day of week" = "Monday";
   };
 
   system.keyboard = {
