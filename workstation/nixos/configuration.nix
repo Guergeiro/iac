@@ -97,32 +97,11 @@ in
   services.displayManager.ly.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.ly.enableGnomeKeyring = true;
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-wlr
-      pkgs.xdg-desktop-portal-gnome
-    ];
-    config = {
-      common = {
-        default = [ "gtk" ];
-      };
-
-      qtile = {
-        default = [ "gtk" ];
-        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
-      };
-
-      qtile-wayland = {
-        default = [ "gtk" ];
-        "org.freedesktop.impl.portal.Screenshot" = [ "wlr" ];
-        "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
-        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
-      };
-    };
-  };
+  programs.xwayland.enable = true;
+  environment.pathsToLink = [
+    "/share/applications"
+    "/share/xdg-desktop-portal"
+  ];
 
   services.pulseaudio.enable = true;
 
@@ -204,14 +183,6 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    legcord
-    google-lighthouse
-    ungoogled-chromium
-    gimp3
-    xclip
-    signal-desktop
-    thunderbird
-
     acpi
     brightnessctl
 
@@ -221,16 +192,7 @@ in
 
     zip
     unzip
-
-    pavucontrol
-    xfce4-taskmanager
-    xfce4-screenshooter
-    xfce4-power-manager
-    wl-clipboard
   ];
-
-  i18n.defaultLocale = "en_GB.UTF-8";
-  i18n.extraLocales = [ "pt_PT.UTF-8" ];
 
   environment.shellAliases = { };
 

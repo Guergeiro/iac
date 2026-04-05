@@ -8,34 +8,17 @@
 }:
 {
   environment.systemPackages = with pkgs; [
-    alacritty
-    alacritty-theme
-    ansible
-    bashInteractive
-    bash-completion
     coreutils
     curl
     deno
-    direnv
     docker
     gcc
-    git
-    git-absorb
-    localsend
-    nix-direnv
     nodejs
-    librewolf
     openssh
     openssl
-    opencode
     python3
     gnutar
-    tmux
-    trash-cli
     vim
-
-    bruno
-    spotify
   ];
 
   # Allow unfree packages
@@ -60,9 +43,7 @@
 
   # Necessary for using flakes on this system.
   nix = {
-    settings = {
-      experimental-features = "nix-command flakes";
-    };
+    settings.experimental-features = "nix-command flakes";
     optimise.automatic = true;
     gc = {
       automatic = true;
@@ -74,16 +55,9 @@
     '';
   };
 
-  environment.shellAliases = {
-    update = updateCmd;
-    upgrade = "sudo nix flake update --flake $HOME/Documents/guergeiro/iac";
-  };
+  environment.shellAliases.update = updateCmd;
 
   environment.variables = lib.mkMerge [
-    {
-      EDITOR = "${pkgs.neovim}/bin/nvim";
-      MANPAGER = "sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
-    }
     envVars
   ];
 }
