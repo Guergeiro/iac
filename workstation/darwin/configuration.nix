@@ -17,15 +17,9 @@
     onActivation.upgrade = true;
     brews = [ ];
     casks = [
-      "ungoogled-chromium"
       "karabiner-elements"
     ];
   };
-
-  environment.interactiveShellInit = ''
-    # Make sure /run/current-system/sw/bin is the first thing in $PATH
-    PATH="/run/current-system/sw/bin:$PATH";
-  '';
 
   security.pam.services.sudo_local = {
     reattach = true;
@@ -113,6 +107,37 @@
   };
 
   programs.bash.enable = true;
+
+  # Don't use the default profile because of path_helper. This might get overwritten during system updates
+  # https://github.com/nix-darwin/nix-darwin/issues/391#issuecomment-2690508643
+  environment.etc.profile = {
+    text = ''
+      if [ -d /private/etc/paths.d ]; then
+        for f in /private/etc/paths.d/*; do
+          [ -f "$f" ] || continue  # Skip and suppress error
+          while IFS="" read -r l || [ -n "$l" ]; do
+            PATH="$PATH:$l"
+            done <"$f"
+          done
+        export PATH
+      fi
+
+      if [ -d /private/etc/manpaths.d ]; then
+        for f in /private/etc/manpaths.d/*; do
+          [ -f "$f" ] || continue  # Skip and suppress error
+          while IFS="" read -r l || [ -n "$l" ]; do
+            MANPATH="$MANPATH:$l"
+            done <"$f"
+          done
+        export MANPATH
+      fi
+
+      if [ "$BASH-no" != "no" ]; then
+        [ -r /etc/bashrc ] && . /etc/bashrc
+      fi
+    '';
+    target = "profile";
+  };
 
   users.knownUsers = [ "${username}" ];
   users.users.${username}.uid = 501;

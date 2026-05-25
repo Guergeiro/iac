@@ -35,7 +35,6 @@
 
   programs.zsh.enable = true;
   programs.bash.completion.enable = true;
-  programs.tmux.enable = true;
 
   fonts.packages = [
     pkgs.nerd-fonts.fantasque-sans-mono
