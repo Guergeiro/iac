@@ -43,7 +43,9 @@
           "home-manager"
         ],
         "minpac": "minpac",
-        "nix-secrets": "nix-secrets",
+        "nix-secrets": [
+          "nix-secrets"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -55,18 +57,18 @@
         "sublime-dracula": "sublime-dracula"
       },
       "locked": {
-        "lastModified": 1779790656,
-        "narHash": "sha256-RmYThSnlwr9y2KUeSeTPzXTddOX7YGRtq1K52ZvrX3o=",
+        "lastModified": 1779794813,
+        "narHash": "sha256-5FnCgKubLoHJfRfd0ApKbu+IfKimCokvmRpRqflwSX0=",
         "ref": "refs/heads/master",
-        "rev": "7591b1a5b770930c9fa131747c43ec19d7086404",
-        "revCount": 490,
+        "rev": "3130aeb612d0527b6b10a3b7ca82724c5fb20bfb",
+        "revCount": 491,
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/guergeiro/dotfiles"
+        "url": "ssh://git@github.com/guergeiro/dotfiles.git"
       },
       "original": {
         "type": "git",
-        "url": "https://github.com/guergeiro/dotfiles"
+        "url": "ssh://git@github.com/guergeiro/dotfiles.git"
       }
     },
     "flake-parts": {
@@ -175,7 +177,6 @@
       },
       "original": {
         "owner": "nix-darwin",
-        "ref": "master",
         "repo": "nix-darwin",
         "type": "github"
       }
@@ -199,20 +200,6 @@
       }
     },
     "nix-secrets": {
-      "flake": false,
-      "locked": {
-        "path": "./nix-secrets",
-        "type": "path"
-      },
-      "original": {
-        "path": "./nix-secrets",
-        "type": "path"
-      },
-      "parent": [
-        "dotfiles"
-      ]
-    },
-    "nix-secrets_2": {
       "flake": false,
       "locked": {
         "path": "./nix-secrets",
@@ -319,7 +306,7 @@
         "homebrew-core": "homebrew-core",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
-        "nix-secrets": "nix-secrets_2",
+        "nix-secrets": "nix-secrets",
         "nixpkgs": "nixpkgs"
       }
     },

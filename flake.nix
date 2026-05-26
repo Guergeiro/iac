@@ -6,7 +6,7 @@
 
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nix-darwin.url = "github:nix-darwin/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
@@ -29,10 +29,11 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Need to use git+https to work around: https://github.com/NixOS/nix/issues/13571
-    dotfiles.url = "git+https://github.com/guergeiro/dotfiles";
+    # Need to use git+ssh to work around: https://github.com/NixOS/nix/issues/13571
+    dotfiles.url = "git+ssh://git@github.com/guergeiro/dotfiles.git";
     dotfiles.inputs.nixpkgs.follows = "nixpkgs";
     dotfiles.inputs.home-manager.follows = "home-manager";
+    dotfiles.inputs.nix-secrets.follows = "nix-secrets";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
