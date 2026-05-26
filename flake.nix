@@ -2,6 +2,8 @@
   description = "IaC flake";
 
   inputs = {
+    self.submodules = true;
+
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
@@ -19,21 +21,21 @@
       flake = false;
     };
 
+    nix-secrets = {
+      url = "./nix-secrets";
+      flake = false;
+    };
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    dotfiles.url = "github:guergeiro/dotfiles";
+    # Need to use git+https to work around: https://github.com/NixOS/nix/issues/13571
+    dotfiles.url = "git+https://github.com/guergeiro/dotfiles";
     dotfiles.inputs.nixpkgs.follows = "nixpkgs";
     dotfiles.inputs.home-manager.follows = "home-manager";
-    dotfiles.inputs.nix-secrets.follows = "nix-secrets";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
-
-    nix-secrets = {
-      url = "git+file:./nix-secrets";
-      flake = false;
-    };
   };
 
   outputs =
@@ -213,6 +215,8 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               nixfmt
+              nixd
+              git-crypt
             ];
 
             GIT_CONFIG_COUNT = "1";
