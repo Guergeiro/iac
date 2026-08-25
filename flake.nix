@@ -5,9 +5,15 @@
     self.submodules = true;
 
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    qtile-nixpkgs.url = "github:nixos/nixpkgs?ref=83b8ff5ad36094db6f339a8151cade8f01caaa0d";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
+    systems.url = "github:nix-systems/default";
+
+    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
@@ -34,56 +40,65 @@
     dotfiles.inputs.nixpkgs.follows = "nixpkgs";
     dotfiles.inputs.home-manager.follows = "home-manager";
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
+    dotfiles.inputs.systems.follows = "systems";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    preservation.url = "github:nix-community/preservation";
   };
 
   outputs =
     {
       self,
       nixpkgs,
+      qtile-nixpkgs,
       nix-darwin,
       home-manager,
       dotfiles,
+      systems,
+      deploy-rs,
       nix-homebrew,
       homebrew-core,
       homebrew-cask,
       nix-secrets,
       disko,
+      preservation,
       ...
-    }@inputs:
+    }:
     let
-      secrets = builtins.fromJSON (builtins.readFile "${nix-secrets}/vars.json");
+      hosts = builtins.fromJSON (builtins.readFile "${nix-secrets}/hosts.json");
 
-      # Define forAllSystems to generate Nixpkgs instances for each system
       forAllSystems =
-        function:
-        nixpkgs.lib.genAttrs [
-          "x86_64-linux"
-          "aarch64-darwin"
-        ] (system: function nixpkgs.legacyPackages.${system});
+        function: nixpkgs.lib.genAttrs (import systems) (system: function nixpkgs.legacyPackages.${system});
 
-      specialArgs = system: hostname: updateCmd: {
-        username = secrets.${system}.username;
-        envVars = secrets.${system}.environment or { };
+      specialArgs = hostname: updateCmd: {
+        username = hosts.${hostname}.username;
+        envVars = hosts.${hostname}.environment or { };
+        qtileNixpkgs = qtile-nixpkgs.legacyPackages.${hosts.${hostname}.system};
         inherit
           self
-          system
           hostname
           updateCmd
           ;
       };
 
+      # Read: https://isabelroses.com/blog/im-not-mad-im-disappointed/
+      hostSystemModule = (
+        { hostname, ... }: {
+          nixpkgs.hostPlatform = hosts.${hostname}.system;
+        }
+      );
+
       homeCfg = (
         {
           pkgs,
-          system,
+          hostname,
           username,
           ...
         }:
         let
-          homeCfg = dotfiles.mkHomeModules pkgs system secrets nix-secrets dotfiles;
+          homeCfg = dotfiles.mkHomeModules pkgs hostname hosts nix-secrets dotfiles;
         in
         {
           home-manager = {
@@ -98,12 +113,14 @@
       linuxModules = [
         ./workstation/nixos/configuration.nix
         ./workstation/shared/system.nix
+        hostSystemModule
         home-manager.nixosModules.home-manager
         homeCfg
       ];
       darwinModules = [
         ./workstation/darwin/configuration.nix
         ./workstation/shared/system.nix
+        hostSystemModule
         home-manager.darwinModules.home-manager
         homeCfg
         (
@@ -144,12 +161,11 @@
       linuxMachines = [
         (
           let
-            system = "x86_64-linux";
             hostname = "mango";
             updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
           in
           {
-            specialArgs = specialArgs system hostname updateCmd;
+            specialArgs = specialArgs hostname updateCmd;
             modules = linuxModules;
           }
         )
@@ -158,13 +174,43 @@
       darwinMachines = [
         (
           let
-            system = "aarch64-darwin";
             hostname = "macbook";
             updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
           in
           {
-            specialArgs = specialArgs system hostname updateCmd;
+            specialArgs = specialArgs hostname updateCmd;
             modules = darwinModules;
+          }
+        )
+      ];
+
+      linuxServers = [
+        (
+          let
+            hostname = "orange";
+            username = hosts.${hostname}.username;
+            publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
+            envVars = hosts.${hostname}.environment or { };
+          in
+          {
+            specialArgs = {
+              inherit
+                self
+                username
+                hostname
+                publicSshKey
+                envVars
+                ;
+            };
+            modules = [
+              disko.nixosModules.disko
+              preservation.nixosModules.default
+              ./servers/${hostname}/configuration.nix
+              ./servers/${hostname}/preservation.nix
+              ./servers/${hostname}/cloudflare-tunnel.nix
+              ./servers/${hostname}/homeassistant.nix
+              hostSystemModule
+            ];
           }
         )
       ];
@@ -186,8 +232,24 @@
             specialArgs = machine.specialArgs;
             modules = machine.modules;
           };
-        }) linuxMachines
+        }) (linuxMachines ++ linuxServers)
       );
+
+      deploy.nodes = builtins.listToAttrs (
+        map (server: {
+          name = server.specialArgs.hostname;
+          value = {
+            hostname = "${server.specialArgs.hostname}.${server.specialArgs.envVars.BASE_DOMAIN}"; # Initially we need the ip address
+            profiles.system = {
+              sshUser = "root";
+              path =
+                deploy-rs.lib.${hosts.${server.specialArgs.hostname}.system}.activate.nixos
+                  self.nixosConfigurations.${server.specialArgs.hostname};
+            };
+          };
+        }) linuxServers
+      );
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
       devShells = forAllSystems (
         pkgs:
@@ -211,13 +273,19 @@
               inherit name path;
             }) hookScripts
           );
+          anywhereScript = pkgs.writeShellScriptBin "nix-anywhere" ''
+            ${pkgs.nix}/bin/nix run github:nix-community/nixos-anywhere -- --flake $1 --target-host nixos@$2
+          '';
         in
         {
           default = pkgs.mkShell {
-            packages = with pkgs; [
-              nixfmt
-              nixd
-              git-crypt
+            packages = [
+              pkgs.nixfmt
+              pkgs.nixd
+              pkgs.git-crypt
+              pkgs.deploy-rs
+              pkgs.cloudflared
+              anywhereScript
             ];
 
             GIT_CONFIG_COUNT = "1";
