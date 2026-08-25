@@ -77,8 +77,6 @@
 
   system.keyboard = {
     enableKeyMapping = false;
-    # nonUS.remapTilde = true;
-    # swapLeftCtrlAndFn = true;
   };
 
   # The platform the configuration will be used on.
@@ -99,11 +97,6 @@
       "2606:4700:4700::1111"
       "2606:4700:4700::1001"
     ];
-  };
-
-  nix.gc.interval = {
-    Hour = 0;
-    Minute = 0;
   };
 
   programs.bash.enable = true;

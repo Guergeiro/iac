@@ -284,7 +284,6 @@
               pkgs.nixd
               pkgs.git-crypt
               pkgs.deploy-rs
-              pkgs.cloudflared
               anywhereScript
             ];
 
