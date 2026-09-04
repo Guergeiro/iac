@@ -77,16 +77,17 @@
         "rofi-dracula": "rofi-dracula",
         "starship-dracula": "starship-dracula",
         "sublime-dracula": "sublime-dracula",
+        "superpowers-skills": "superpowers-skills",
         "systems": [
           "systems"
         ]
       },
       "locked": {
-        "lastModified": 1787658937,
-        "narHash": "sha256-jDtbUHIx4MOimJhRFFCkrqR9Rky5umwC1VWktWVEFWQ=",
+        "lastModified": 1788452504,
+        "narHash": "sha256-dMusCzVftZHi3cht2jy2nFtL6K1WFzpMye+uYi+iQSo=",
         "ref": "refs/heads/master",
-        "rev": "076a791dc4936733b7ac20942b768fb89771fed6",
-        "revCount": 507,
+        "rev": "338b8beca5cfdc29bc5ff6876819919bf0b7e84d",
+        "revCount": 515,
         "submodules": true,
         "type": "git",
         "url": "ssh://git@github.com/guergeiro/dotfiles.git"
@@ -415,6 +416,22 @@
       "original": {
         "owner": "dracula",
         "repo": "sublime",
+        "type": "github"
+      }
+    },
+    "superpowers-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786553601,
+        "narHash": "sha256-EsGNO0dULWf5Bx6bGrCv2kI2Z8aKH0kRvGiuN23wChQ=",
+        "owner": "obra",
+        "repo": "superpowers",
+        "rev": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+        "type": "github"
+      },
+      "original": {
+        "owner": "obra",
+        "repo": "superpowers",
         "type": "github"
       }
     },

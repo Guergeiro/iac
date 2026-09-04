@@ -67,6 +67,7 @@
       ShowPathbar = true;
       FXPreferredViewStyle = "clmv";
       QuitMenuItem = true;
+      FXRemoveOldTrashItems = true;
     };
     loginwindow.GuestEnabled = false;
     menuExtraClock.Show24Hour = true;
