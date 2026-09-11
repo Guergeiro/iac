@@ -193,11 +193,11 @@
         "vim-smartpairs": "vim-smartpairs"
       },
       "locked": {
-        "lastModified": 1788630800,
-        "narHash": "sha256-K2Pye5RymaWhZVKfMzNat5kKLT4pVuO4Pfo7VoAdaDY=",
+        "lastModified": 1789132783,
+        "narHash": "sha256-f2XkPR8s+jzVd3b8zlAN3K6aPuW38/vh92Um6kFlrr4=",
         "ref": "refs/heads/master",
-        "rev": "2a86bbdec8fa59fc84d0265452e91fb7a18d51e0",
-        "revCount": 517,
+        "rev": "72353fc8b8998d0b2b5417b2db4448a37abc27b3",
+        "revCount": 518,
         "submodules": true,
         "type": "git",
         "url": "ssh://git@github.com/guergeiro/dotfiles.git"
