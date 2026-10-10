@@ -2,6 +2,7 @@
   description = "IaC flake";
 
   inputs = {
+
     self.submodules = true;
 
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -46,10 +47,13 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
     preservation.url = "github:nix-community/preservation";
+
+    git-format-staged.url = "github:hallettj/git-format-staged";
+    git-format-staged.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
-    {
+    inputs@{
       self,
       nixpkgs,
       qtile-nixpkgs,
@@ -64,6 +68,7 @@
       nix-secrets,
       disko,
       preservation,
+      git-format-staged,
       ...
     }:
     let
@@ -249,7 +254,33 @@
           };
         }) linuxServers
       );
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      checks =
+        (builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib)
+        // forAllSystems (pkgs: {
+          nix-fmt =
+            pkgs.runCommand "check-nix-fmt"
+              {
+                buildInputs = [ pkgs.nixfmt ];
+              }
+              ''
+                ${pkgs.nixfmt}/bin/nixfmt --check .
+                touch $out
+              '';
+
+          tofu-fmt =
+            pkgs.runCommand "check-tofu-fmt"
+              {
+                buildInputs = [
+                  pkgs.opentofu
+                  pkgs.coreutils
+                ];
+              }
+              ''
+                ${pkgs.opentofu}/bin/tofu fmt -check -recursive ${./infra}
+                ${pkgs.coreutils}/bin/touch $out
+              '';
+
+        });
 
       devShells = forAllSystems (
         pkgs:
@@ -257,28 +288,42 @@
           hookScripts = {
             pre-commit = pkgs.writeShellScript "pre-commit" ''
               format_staged_nix_files() {
-                files=$(${pkgs.git}/bin/git diff --cached --name-only --diff-filter=ACMR -- '*.nix')
-                [ -z "$files" ] && return 0
-                ${pkgs.coreutils}/bin/echo "$files" | ${pkgs.findutils}/bin/xargs ${pkgs.nixfmt}/bin/nixfmt
-                ${pkgs.coreutils}/bin/echo "$files" | ${pkgs.findutils}/bin/xargs ${pkgs.git}/bin/git add
+                git-format-staged -f '${pkgs.nixfmt}/bin/nixfmt --filename {}' '*.nix'
               }
+
+              format_staged_tf_files() {
+                git-format-staged -f '${pkgs.opentofu}/bin/tofu fmt {}' '*.tf'
+              }
+
               format_staged_nix_files
+              format_staged_tf_files
             '';
             post-commit = pkgs.writeShellScript "post-commit" ''
               exec ${pkgs.git}/bin/git update-index -g
             '';
           };
-          hooksDir = pkgs.linkFarm "git-hooks" (
-            pkgs.lib.mapAttrsToList (name: path: {
-              inherit name path;
-            }) hookScripts
-          );
+          hooksEnv = {
+            GIT_CONFIG_COUNT = "1";
+            GIT_CONFIG_KEY_0 = "core.hooksPath";
+            GIT_CONFIG_VALUE_0 = pkgs.linkFarm "git-hooks" (
+              pkgs.lib.mapAttrsToList (name: path: {
+                inherit name path;
+              }) hookScripts
+            );
+          };
+
           anywhereScript = pkgs.writeShellScriptBin "nix-anywhere" ''
             ${pkgs.nix}/bin/nix run github:nix-community/nixos-anywhere -- --flake $1 --target-host nixos@$2
           '';
         in
         {
-          default = pkgs.mkShell {
+          default = pkgs.mkShellNoCC {
+            packages = [ git-format-staged.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+            env = hooksEnv;
+          };
+          root-shell = pkgs.mkShellNoCC {
+            inputsFrom = [ self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
+
             packages = [
               pkgs.nixfmt
               pkgs.nixd
@@ -287,9 +332,33 @@
               anywhereScript
             ];
 
-            GIT_CONFIG_COUNT = "1";
-            GIT_CONFIG_KEY_0 = "core.hooksPath";
-            GIT_CONFIG_VALUE_0 = hooksDir;
+            env = hooksEnv;
+          };
+          tf-shell = pkgs.mkShellNoCC {
+            inputsFrom = [ self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
+
+            packages = [
+              pkgs.opentofu
+              # Create a wrapper executable named "terraform" that proxies to opentofu
+              (pkgs.writeShellScriptBin "terraform" ''
+                exec ${pkgs.opentofu}/bin/tofu "$@"
+              '')
+
+              (pkgs.writeShellScriptBin "tf-init" ''
+                exec ${pkgs.opentofu}/bin/tofu init -backend-config=env-backend/$1.tfbackend -var-file=env-vars/$1.tfvars
+              '')
+              (pkgs.writeShellScriptBin "tf-validate" ''
+                exec ${pkgs.opentofu}/bin/tofu validate -var-file=env-vars/$1.tfvars
+              '')
+              (pkgs.writeShellScriptBin "tf-plan" ''
+                exec ${pkgs.opentofu}/bin/tofu plan -var-file=env-vars/$1.tfvars -out=tfplan
+              '')
+              (pkgs.writeShellScriptBin "tf-apply" ''
+                exec ${pkgs.opentofu}/bin/tofu apply tfplan
+              '')
+            ];
+
+            env = hooksEnv;
           };
         }
       );

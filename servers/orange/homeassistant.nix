@@ -44,33 +44,6 @@ let
     backup:
   '';
 
-  systemdServices = [
-    "homeassistant"
-  ];
-
-  commonServiceConfig = {
-    serviceConfig = {
-      Restart = lib.mkOverride 90 "always";
-    };
-    after = [
-      "upsert-homeassistant-config.service"
-      "docker-network-cloudflare-tunnel.service"
-      "docker-network-homeassistant.service"
-    ];
-    requires = [
-      "upsert-homeassistant-config.service"
-      "docker-network-cloudflare-tunnel.service"
-      "docker-network-homeassistant.service"
-    ];
-    partOf = [
-      "docker-cloudflare-tunnel-root.target"
-      "docker-homeassistant-root.target"
-    ];
-    wantedBy = [
-      "docker-cloudflare-tunnel-root.target"
-      "docker-homeassistant-root.target"
-    ];
-  };
 in
 {
   # Root service
@@ -108,7 +81,6 @@ in
       ExecStart = "${pkgs.systemd}/bin/systemctl stop docker-homeassistant-root.target";
     };
   };
-
   systemd.services."start-docker-homeassistant-root" = {
     path = [ pkgs.systemd ];
     description = "Starts the entire Homeassisntant group.";
@@ -117,8 +89,6 @@ in
       ExecStart = "${pkgs.systemd}/bin/systemctl start docker-homeassistant-root.target";
     };
   };
-
-  # Timers
   systemd.timers."stop-docker-homeassistant-root" = {
     description = "Timer to stop the Homeassisntant stack at 4:40 am.";
     wantedBy = [ "timers.target" ];
@@ -127,7 +97,6 @@ in
       Unit = "stop-docker-homeassistant-root.service";
     };
   };
-
   systemd.timers."start-docker-homeassistant-root" = {
     description = "Timer to start the Homeassisntant stack at 5:00 am.";
     wantedBy = [ "timers.target" ];
@@ -137,14 +106,55 @@ in
     };
   };
 
-  systemd.services."docker-homeassistant" = commonServiceConfig;
+  # We should prune old media files from Home Assistant to avoid filling up the disk
+  systemd.services."prune-old-media" = {
+    description = "Prune old media files from Home Assistant.";
+    serviceConfig = {
+      Type = "oneshot";
+    };
+    script = ''
+      ${pkgs.coreutils}/bin/find ${rootDir}/media -type f -mtime +7 -delete
+    '';
+  };
+  systemd.timers."prune-old-media" = {
+    description = "Timer to prune old media files from Home Assistant.";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "*-*-* 04:45:00";
+      Unit = "prune-old-media.service";
+    };
+  };
+
+  # Manual homeassistant service
+  systemd.services."docker-homeassistant" = {
+    serviceConfig = {
+      Restart = lib.mkOverride 90 "always";
+    };
+    after = [
+      "upsert-homeassistant-config.service"
+      "docker-network-cloudflare-tunnel.service"
+      "docker-network-homeassistant.service"
+    ];
+    requires = [
+      "upsert-homeassistant-config.service"
+      "docker-network-cloudflare-tunnel.service"
+      "docker-network-homeassistant.service"
+    ];
+    partOf = [
+      "docker-cloudflare-tunnel-root.target"
+      "docker-homeassistant-root.target"
+    ];
+    wantedBy = [
+      "docker-cloudflare-tunnel-root.target"
+      "docker-homeassistant-root.target"
+    ];
+  };
 
   preservation.preserveAt."/persistent" = {
     directories = [
       rootDir
     ];
   };
-
   systemd.tmpfiles.rules = map (file: "f ${rootDir}/config/${file} 0640 root root -") [
     "automations.yaml"
     "scenes.yaml"
@@ -157,7 +167,6 @@ in
     "notifications.yaml"
     "tts.yaml"
   ];
-
   systemd.services."upsert-homeassistant-config" = {
     description = "Enforce Home Assistant configuration.yaml from Nix store";
     path = [ pkgs.coreutils ];
@@ -187,7 +196,6 @@ in
       ++ [
         "/run/udev:/run/udev:ro"
       ];
-    dependsOn = builtins.filter (service: service != "homeassistant") systemdServices;
     environment = {
       DISABLE_JEMALLOC = "true";
     };

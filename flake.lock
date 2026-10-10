@@ -245,6 +245,66 @@
         "type": "github"
       }
     },
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1638122382,
+        "narHash": "sha256-sQzZzAbvKEqN9s0bzWuYmRaA03v40gaJ4+iL1LXjaeI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "74f7e4319258e287b0f9cb95426c9853b282730b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "git-format-staged": {
+      "inputs": {
+        "git-hooks": "git-hooks",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpkgs-old-pythons": "nixpkgs-old-pythons"
+      },
+      "locked": {
+        "lastModified": 1785786129,
+        "narHash": "sha256-Yc4DVSGY3rFSNxz7M3kxZm5a64MohxsdGVqIDVz2HXE=",
+        "owner": "hallettj",
+        "repo": "git-format-staged",
+        "rev": "ecd3d64b5511ec50826865a35c9b23f03fd2b2e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hallettj",
+        "repo": "git-format-staged",
+        "type": "github"
+      }
+    },
+    "git-hooks": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": [
+          "git-format-staged",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1766934887,
+        "narHash": "sha256-zXB/psKqAm57fqqJm1Bd8W7uZYnjKNbqg/1jBV9+3Bg=",
+        "owner": "ysndr",
+        "repo": "nix-git-hooks",
+        "rev": "d48aa6c86f9ded84e342e60ebebf8f973a891aa9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ysndr",
+        "repo": "nix-git-hooks",
+        "rev": "d48aa6c86f9ded84e342e60ebebf8f973a891aa9",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -395,6 +455,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-old-pythons": {
+      "locked": {
+        "lastModified": 1766902085,
+        "narHash": "sha256-coBu0ONtFzlwwVBzmjacUQwj3G+lybcZ1oeNSQkgC0M=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c0b0e0fddf73fd517c3471e546c0df87a42d53f4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c0b0e0fddf73fd517c3471e546c0df87a42d53f4",
+        "type": "github"
+      }
+    },
     "nur": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -485,6 +561,7 @@
         "deploy-rs": "deploy-rs",
         "disko": "disko",
         "dotfiles": "dotfiles",
+        "git-format-staged": "git-format-staged",
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
