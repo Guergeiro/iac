@@ -108,6 +108,35 @@ in
     };
   };
 
+  services.keyd = {
+    enable = true;
+    keyboards = {
+      default = {
+        ids = [ "*" ];
+        settings = {
+          main = {
+            capslock = "timeout(esc, 500, capslock)";
+          };
+
+          # It's normally easier to mess with Linux keymaps than MacOS
+          meta = {
+            c = "G-,";
+          };
+          alt = {
+            a = "C-a";
+            c = "C-c";
+            f = "C-f";
+            l = "C-l";
+            r = "C-r";
+            v = "C-v";
+            x = "C-x";
+            z = "C-z";
+          };
+        };
+      };
+    };
+  };
+
   services.displayManager.ly.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.ly.enableGnomeKeyring = true;
