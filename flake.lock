@@ -193,11 +193,11 @@
         "vim-smartpairs": "vim-smartpairs"
       },
       "locked": {
-        "lastModified": 1789132783,
-        "narHash": "sha256-f2XkPR8s+jzVd3b8zlAN3K6aPuW38/vh92Um6kFlrr4=",
+        "lastModified": 1791902798,
+        "narHash": "sha256-ADdFKE+K8wSZIu6gDvLzDS4apowE6sabx8fUhiGB8I0=",
         "ref": "refs/heads/master",
-        "rev": "72353fc8b8998d0b2b5417b2db4448a37abc27b3",
-        "revCount": 518,
+        "rev": "da54daae7bf5347b9fdd3dbfdd4ce99258b5c6bb",
+        "revCount": 520,
         "submodules": true,
         "type": "git",
         "url": "ssh://git@github.com/guergeiro/dotfiles.git"
@@ -441,16 +441,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787498568,
-        "narHash": "sha256-9i/VTdusq/+NM/tz+J1Re+ojkMB8MBf0QshnYfzHz30=",
+        "lastModified": 1791765022,
+        "narHash": "sha256-ZGq3ptZzA+oO0N/Wi/F+GbuTijLkYExD01LvpNFAvr0=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+        "rev": "7993f34ee47e28a3d607a525aadc6c94b73be728",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixos-unstable",
+        "ref": "nixos-26.05",
         "repo": "nixpkgs",
         "type": "github"
       }

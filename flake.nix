@@ -5,7 +5,7 @@
 
     self.submodules = true;
 
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
     qtile-nixpkgs.url = "github:nixos/nixpkgs?ref=83b8ff5ad36094db6f339a8151cade8f01caaa0d";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin";
