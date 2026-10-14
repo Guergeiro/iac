@@ -8,7 +8,6 @@
   username,
   hostname,
   lib,
-  qtileNixpkgs,
   ...
 }:
 let
@@ -20,15 +19,6 @@ let
   ];
 
   intelRenderNode = "/dev/dri/by-path/pci-0000:00:02.0-render";
-
-  qtilePkg =
-    let
-      pkg = qtileNixpkgs.python3Packages.qtile;
-      sysVer = pkgs.python3Packages.qtile.version;
-    in
-    lib.warnIf (
-      sysVer >= pkg.version
-    ) "Using outdated qtile version ${pkg.version} instead of ${sysVer}." pkg;
 in
 {
   imports = [
@@ -94,7 +84,6 @@ in
     enable = true;
     windowManager.qtile = {
       enable = true;
-      package = qtilePkg;
       extraPackages =
         python3Packages: with python3Packages; [
           qtile-extras
