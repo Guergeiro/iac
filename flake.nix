@@ -5,11 +5,12 @@
 
     self.submodules = true;
 
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
-    qtile-nixpkgs.url = "github:nixos/nixpkgs?ref=83b8ff5ad36094db6f339a8151cade8f01caaa0d";
+    # Platform-specific nixpkgs channels
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
 
-    nix-darwin.url = "github:nix-darwin/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin.url = "github:nix-darwin/nix-darwin?ref=nix-darwin-26.05";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
 
     systems.url = "github:nix-systems/default";
 
@@ -33,12 +34,13 @@
       flake = false;
     };
 
-    home-manager.url = "github:nix-community/home-manager";
+    home-manager.url = "github:nix-community/home-manager?ref=release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # Need to use git+ssh to work around: https://github.com/NixOS/nix/issues/13571
     dotfiles.url = "git+ssh://git@github.com/guergeiro/dotfiles.git";
     dotfiles.inputs.nixpkgs.follows = "nixpkgs";
+    dotfiles.inputs.nixpkgs-darwin.follows = "nixpkgs-darwin";
     dotfiles.inputs.home-manager.follows = "home-manager";
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
     dotfiles.inputs.systems.follows = "systems";
@@ -53,10 +55,10 @@
   };
 
   outputs =
-    inputs@{
+    {
       self,
       nixpkgs,
-      qtile-nixpkgs,
+      nixpkgs-darwin,
       nix-darwin,
       home-manager,
       dotfiles,
@@ -75,12 +77,22 @@
       hosts = builtins.fromJSON (builtins.readFile "${nix-secrets}/hosts.json");
 
       forAllSystems =
-        function: nixpkgs.lib.genAttrs (import systems) (system: function nixpkgs.legacyPackages.${system});
+        function:
+        nixpkgs.lib.genAttrs (import systems) (
+          system:
+          let
+            pkgs =
+              if builtins.match ".*-darwin" system != null then
+                nixpkgs-darwin.legacyPackages.${system}
+              else
+                nixpkgs.legacyPackages.${system};
+          in
+          function pkgs
+        );
 
       specialArgs = hostname: updateCmd: {
         username = hosts.${hostname}.username;
         envVars = hosts.${hostname}.environment or { };
-        qtileNixpkgs = qtile-nixpkgs.legacyPackages.${hosts.${hostname}.system};
         inherit
           self
           hostname
