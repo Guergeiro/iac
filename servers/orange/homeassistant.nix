@@ -95,6 +95,7 @@ in
     timerConfig = {
       OnCalendar = "*-*-* 04:40:00";
       Unit = "stop-docker-homeassistant-root.service";
+      Persistent = true;
     };
   };
   systemd.timers."start-docker-homeassistant-root" = {
@@ -103,17 +104,20 @@ in
     timerConfig = {
       OnCalendar = "*-*-* 05:00:00";
       Unit = "start-docker-homeassistant-root.service";
+      Persistent = true;
     };
   };
 
   # We should prune old media files from Home Assistant to avoid filling up the disk
   systemd.services."prune-old-media" = {
     description = "Prune old media files from Home Assistant.";
+    path = [ pkgs.findutils ];
     serviceConfig = {
       Type = "oneshot";
+      ProtectHome = false;
     };
     script = ''
-      ${pkgs.coreutils}/bin/find ${rootDir}/media -type f -mtime +7 -delete
+      ${pkgs.findutils}/bin/find ${rootDir}/media -type f -mtime +7 -delete
     '';
   };
   systemd.timers."prune-old-media" = {
@@ -122,6 +126,7 @@ in
     timerConfig = {
       OnCalendar = "*-*-* 04:45:00";
       Unit = "prune-old-media.service";
+      Persistent = true;
     };
   };
 

@@ -3,6 +3,7 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 {
+  self,
   config,
   pkgs,
   username,
@@ -23,6 +24,7 @@ in
 {
   imports = [
     # Include the results of the hardware scan.
+    "${self}/modules/docker.nix"
     ./hardware-configuration.nix
   ];
 
@@ -117,8 +119,10 @@ in
             f = "C-f";
             l = "C-l";
             r = "C-r";
+            t = "C-t";
             v = "C-v";
             x = "C-x";
+            w = "C-w";
             z = "C-z";
           };
         };
@@ -186,28 +190,8 @@ in
     extraGroups = [
       "networkmanager"
       "wheel"
-      "docker"
       "video"
     ];
-  };
-
-  virtualisation.docker = {
-    enable = true;
-    enableOnBoot = true;
-    daemon.settings = {
-      live-restore = true;
-      ipv6 = true;
-      fixed-cidr-v6 = "2001:818:dba0:5c00::/56";
-      ip-forward-no-drop = true;
-    };
-    autoPrune = {
-      enable = true;
-      flags = [ "--all" ];
-    };
-  };
-
-  virtualisation.oci-containers = {
-    backend = "docker";
   };
 
   # List packages installed in system profile. To search, run:
@@ -217,12 +201,7 @@ in
     brightnessctl
 
     reaction
-
-    zip
-    unzip
   ];
-
-  environment.shellAliases = { };
 
   # Waydroid config start (https://github.com/pioner14/Waydroid_on_NixOS/blob/main/Waydroid_Setup_Guide.md)
   # This specific line installs the Waydroid package and enables the service
