@@ -15,6 +15,7 @@
     "${self}/modules/nix.nix"
     "${self}/modules/docker.nix"
     "${self}/modules/server.nix"
+    "${self}/modules/security.nix"
   ];
 
   boot.loader.grub = {

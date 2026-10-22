@@ -10,6 +10,7 @@
   imports = [
     "${self}/modules/nix.nix"
     "${self}/modules/users.nix"
+    "${self}/modules/security.nix"
   ];
 
   # Allow unfree packages
