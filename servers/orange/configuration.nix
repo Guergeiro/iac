@@ -2,7 +2,6 @@
   self,
   modulesPath,
   pkgs,
-  hostname,
   username,
   ...
 }:
@@ -12,6 +11,9 @@
     (modulesPath + "/profiles/qemu-guest.nix")
     ./hardware-configuration.nix
     ./disk-config.nix
+    ./preservation.nix
+    ./cloudflare-tunnel.nix
+    ./homeassistant.nix
     "${self}/modules/nix.nix"
     "${self}/modules/docker.nix"
     "${self}/modules/server.nix"
@@ -22,8 +24,6 @@
     efiSupport = true;
     efiInstallAsRemovable = true;
   };
-  networking.hostName = hostname;
-  services.openssh.enable = true;
 
   environment.systemPackages = with pkgs; [
     curl
@@ -45,8 +45,6 @@
       "wheel"
     ];
   };
-
-  networking.firewall.enable = true;
 
   system.stateVersion = "26.05"; # Did you read the comment?
 }

@@ -4,6 +4,7 @@
   publicSshKey,
   lib,
   envVars,
+  hostname,
   ...
 }:
 {
@@ -43,4 +44,13 @@
       Persistent = true;
     };
   };
+
+  networking.hostName = hostname;
+  services.openssh = {
+    enable = true;
+    generateHostKeys = false;
+  };
+
+  networking.firewall.enable = true;
+  networking.dhcpcd.enable = true;
 }

@@ -3,11 +3,6 @@ variable "cf_api_token" {
   sensitive = true
 }
 
-variable "cf_api_token_page_rules" {
-  type      = string
-  sensitive = true
-}
-
 variable "account_id" {
   type = string
 }

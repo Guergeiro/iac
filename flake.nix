@@ -2,7 +2,6 @@
   description = "IaC flake";
 
   inputs = {
-
     self.submodules = true;
 
     # Platform-specific nixpkgs channels
@@ -14,6 +13,8 @@
 
     systems.url = "github:nix-systems/default";
 
+    agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -62,6 +63,7 @@
       nix-darwin,
       home-manager,
       dotfiles,
+      agenix,
       systems,
       deploy-rs,
       nix-homebrew,
@@ -131,6 +133,7 @@
         ./workstation/nixos/configuration.nix
         ./workstation/shared/system.nix
         hostSystemModule
+        agenix.nixosModules.default
         home-manager.nixosModules.home-manager
         homeCfg
       ];
@@ -138,6 +141,7 @@
         ./workstation/darwin/configuration.nix
         ./workstation/shared/system.nix
         hostSystemModule
+        agenix.nixosModules.default
         home-manager.darwinModules.home-manager
         homeCfg
         (
@@ -201,36 +205,38 @@
         )
       ];
 
-      linuxServers = [
-        (
-          let
-            hostname = "orange";
-            username = hosts.${hostname}.username;
-            publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
-            envVars = hosts.${hostname}.environment or { };
-          in
-          {
-            specialArgs = {
-              inherit
-                self
-                username
-                hostname
-                publicSshKey
-                envVars
-                ;
-            };
-            modules = [
-              disko.nixosModules.disko
-              preservation.nixosModules.default
-              ./servers/${hostname}/configuration.nix
-              ./servers/${hostname}/preservation.nix
-              ./servers/${hostname}/cloudflare-tunnel.nix
-              ./servers/${hostname}/homeassistant.nix
-              hostSystemModule
-            ];
-          }
-        )
-      ];
+      linuxServers =
+        map
+          (
+            hostname:
+            let
+              username = hosts.${hostname}.username;
+              publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
+              envVars = hosts.${hostname}.environment or { };
+            in
+            {
+              specialArgs = {
+                inherit
+                  self
+                  username
+                  hostname
+                  publicSshKey
+                  envVars
+                  ;
+              };
+              modules = [
+                disko.nixosModules.disko
+                preservation.nixosModules.default
+                ./servers/${hostname}/configuration.nix
+                hostSystemModule
+              ];
+            }
+          )
+          [
+            "orange"
+            "tangerine"
+          ];
+
     in
     {
       darwinConfigurations = builtins.listToAttrs (
@@ -340,8 +346,9 @@
               pkgs.nixfmt
               pkgs.nixd
               pkgs.git-crypt
-              pkgs.deploy-rs
               anywhereScript
+              deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.default
+              agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
             ];
 
             env = hooksEnv;
@@ -357,16 +364,22 @@
               '')
 
               (pkgs.writeShellScriptBin "tf-init" ''
-                exec ${pkgs.opentofu}/bin/tofu init -backend-config=env-backend/$1.tfbackend -var-file=env-vars/$1.tfvars
+                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 init -backend-config=../../env-backend/$1.tfbackend -var-file=../../env-vars/$1.tfvars
               '')
               (pkgs.writeShellScriptBin "tf-validate" ''
-                exec ${pkgs.opentofu}/bin/tofu validate -var-file=env-vars/$1.tfvars
+                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 validate -var-file=../../env-vars/$1.tfvars
               '')
               (pkgs.writeShellScriptBin "tf-plan" ''
-                exec ${pkgs.opentofu}/bin/tofu plan -var-file=env-vars/$1.tfvars -out=tfplan
+                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 plan -var-file=../../env-vars/$1.tfvars -out=tfplan
               '')
               (pkgs.writeShellScriptBin "tf-apply" ''
-                exec ${pkgs.opentofu}/bin/tofu apply tfplan
+                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 apply tfplan
+              '')
+              (pkgs.writeShellScriptBin "tf-destroy-plan" ''
+                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 plan -destroy -var-file=../../env-vars/$1.tfvars -out=tfdestroyplan
+              '')
+              (pkgs.writeShellScriptBin "tf-destroy-apply" ''
+                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 apply tfdestroyplan
               '')
             ];
 
