@@ -5,21 +5,14 @@
   ...
 }:
 {
+  imports = [
+    "${self}/workstation/shared/system.nix"
+    "${self}/workstation/darwin/homebrew.nix"
+  ];
 
   environment.systemPackages = with pkgs; [
     vscode
   ];
-
-  homebrew = {
-    enable = true;
-    onActivation.cleanup = "zap";
-    onActivation.autoUpdate = true;
-    onActivation.upgrade = true;
-    brews = [ ];
-    casks = [
-      "karabiner-elements"
-    ];
-  };
 
   security.pam.services.sudo_local = {
     reattach = true;

@@ -23,8 +23,9 @@ let
 in
 {
   imports = [
-    # Include the results of the hardware scan.
     "${self}/modules/docker.nix"
+    "${self}/workstation/shared/system.nix"
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 

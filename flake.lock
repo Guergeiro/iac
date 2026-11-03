@@ -177,6 +177,9 @@
     },
     "dotfiles": {
       "inputs": {
+        "agenix": [
+          "agenix"
+        ],
         "clean-path-vim": "clean-path-vim",
         "ddc-buffer": "ddc-buffer",
         "ddc-filter-converter_remove_overlap": "ddc-filter-converter_remove_overlap",
@@ -216,11 +219,11 @@
         "vim-smartpairs": "vim-smartpairs"
       },
       "locked": {
-        "lastModified": 1791932336,
-        "narHash": "sha256-tDGa12Es2km8Fw+o+GdtqlbmxkfajxH40zQTmrpcX3A=",
+        "lastModified": 1793745912,
+        "narHash": "sha256-aC4USeaHIQz+q5u2mo4Y3LCxO6LuPvcdjHMgi2DPsfg=",
         "ref": "refs/heads/master",
-        "rev": "7ffc423b6340bfb769dcd2503572714b911112ca",
-        "revCount": 522,
+        "rev": "663297622150cdd28d99c9ef4041c641f00f9eaa",
+        "revCount": 525,
         "submodules": true,
         "type": "git",
         "url": "ssh://git@github.com/guergeiro/dotfiles.git"

@@ -44,6 +44,7 @@
     dotfiles.inputs.nixpkgs-darwin.follows = "nixpkgs-darwin";
     dotfiles.inputs.home-manager.follows = "home-manager";
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
+    dotfiles.inputs.agenix.follows = "agenix";
     dotfiles.inputs.systems.follows = "systems";
 
     disko.url = "github:nix-community/disko";
@@ -92,16 +93,6 @@
           function pkgs
         );
 
-      specialArgs = hostname: updateCmd: {
-        username = hosts.${hostname}.username;
-        envVars = hosts.${hostname}.environment or { };
-        inherit
-          self
-          hostname
-          updateCmd
-          ;
-      };
-
       # Read: https://isabelroses.com/blog/im-not-mad-im-disappointed/
       hostSystemModule = (
         { hostname, ... }: {
@@ -129,81 +120,70 @@
         }
       );
 
-      linuxModules = [
-        ./workstation/nixos/configuration.nix
-        ./workstation/shared/system.nix
-        hostSystemModule
-        agenix.nixosModules.default
-        home-manager.nixosModules.home-manager
-        homeCfg
-      ];
-      darwinModules = [
-        ./workstation/darwin/configuration.nix
-        ./workstation/shared/system.nix
-        hostSystemModule
-        agenix.nixosModules.default
-        home-manager.darwinModules.home-manager
-        homeCfg
-        (
-          { config, ... }:
-          {
-            homebrew.taps = builtins.attrNames config.nix-homebrew.taps;
-          }
-        )
-        nix-homebrew.darwinModules.nix-homebrew
-        (
-          { username, ... }:
-          {
-            nix-homebrew = {
-              # Install Homebrew under the default prefix
-              enable = true;
-
-              # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
-              enableRosetta = true;
-
-              # User owning the Homebrew prefix
-              user = username;
-
-              # Optional: Declarative tap management
-              taps = {
-                "homebrew/homebrew-core" = homebrew-core;
-                "homebrew/homebrew-cask" = homebrew-cask;
+      linuxWorkstations =
+        map
+          (
+            hostname:
+            let
+              username = hosts.${hostname}.username;
+              updateCmd = "nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname} --sudo";
+              envVars = hosts.${hostname}.environment or { };
+            in
+            {
+              specialArgs = {
+                inherit
+                  self
+                  username
+                  hostname
+                  updateCmd
+                  envVars
+                  ;
               };
+              modules = [
+                ./workstation/nixos/configuration.nix
+                hostSystemModule
+                home-manager.nixosModules.home-manager
+                homeCfg
+              ];
+            }
+          )
+          [
+            "mango"
+          ];
 
-              # Optional: Enable fully-declarative tap management
-              #
-              # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-              mutableTaps = false;
-            };
-          }
-        )
-      ];
-
-      linuxMachines = [
-        (
-          let
-            hostname = "mango";
-            updateCmd = "sudo nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
-          in
-          {
-            specialArgs = specialArgs hostname updateCmd;
-            modules = linuxModules;
-          }
-        )
-      ];
-
-      darwinMachines = [
-        (
-          let
-            hostname = "macbook";
-            updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
-          in
-          {
-            specialArgs = specialArgs hostname updateCmd;
-            modules = darwinModules;
-          }
-        )
-      ];
+      darwinWorkstations =
+        map
+          (
+            hostname:
+            let
+              username = hosts.${hostname}.username;
+              updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
+              envVars = hosts.${hostname}.environment or { };
+            in
+            {
+              specialArgs = {
+                inherit
+                  self
+                  username
+                  hostname
+                  updateCmd
+                  homebrew-core
+                  homebrew-cask
+                  envVars
+                  ;
+              };
+              modules = [
+                ./workstation/darwin/configuration.nix
+                hostSystemModule
+                home-manager.darwinModules.home-manager
+                nix-homebrew.darwinModules.nix-homebrew
+                homeCfg
+              ];
+            }
+          )
+          [
+            "macbook"
+          ];
 
       linuxServers =
         map
@@ -246,7 +226,7 @@
             specialArgs = machine.specialArgs;
             modules = machine.modules;
           };
-        }) darwinMachines
+        }) darwinWorkstations
       );
       nixosConfigurations = builtins.listToAttrs (
         map (machine: {
@@ -255,7 +235,7 @@
             specialArgs = machine.specialArgs;
             modules = machine.modules;
           };
-        }) (linuxMachines ++ linuxServers)
+        }) (linuxWorkstations ++ linuxServers)
       );
 
       deploy.nodes = builtins.listToAttrs (
