@@ -120,6 +120,9 @@
               home-manager
               isWorkstation
               dotfiles
+              nix-homebrew
+              homebrew-core
+              homebrew-cask
               ;
           };
           modules = [

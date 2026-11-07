@@ -2,11 +2,13 @@
   self,
   pkgs,
   username,
+  nix-homebrew,
   ...
 }:
 {
   imports = [
     "${self}/modules/workstation.nix"
+    nix-homebrew.darwinModules.nix-homebrew
     ./homebrew.nix
   ];
 
