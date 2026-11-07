@@ -6,8 +6,8 @@
 }:
 {
   imports = [
-    "${self}/workstation/shared/system.nix"
-    "${self}/workstation/darwin/homebrew.nix"
+    "${self}/modules/workstation.nix"
+    ./homebrew.nix
   ];
 
   environment.systemPackages = with pkgs; [

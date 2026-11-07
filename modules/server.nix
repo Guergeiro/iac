@@ -1,12 +1,15 @@
 {
   pkgs,
   username,
-  publicSshKey,
   lib,
   envVars,
   hostname,
+  nix-secrets,
   ...
 }:
+let
+  publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
+in
 {
   nix.settings.trusted-users = [ "root" ];
 

@@ -95,127 +95,54 @@
 
       # Read: https://isabelroses.com/blog/im-not-mad-im-disappointed/
       hostSystemModule = (
-        { hostname, ... }: {
-          nixpkgs.hostPlatform = hosts.${hostname}.system;
+        { host, ... }: {
+          nixpkgs.hostPlatform = host.system;
         }
       );
 
-      homeCfg = (
-        {
-          pkgs,
-          hostname,
-          username,
-          ...
-        }:
+      configurations = map (
+        hostname:
         let
-          homeCfg = dotfiles.mkHomeModules pkgs hostname hosts nix-secrets dotfiles;
+          host = builtins.fromJSON (builtins.readFile "${nix-secrets}/${hostname}/host.json");
+          username = host.username;
+          envVars = host.environment or { };
+          isWorkstation = host.workstation or false;
         in
         {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            extraSpecialArgs = homeCfg.extraSpecialArgs;
-            users.${username}.imports = homeCfg.modules;
+          specialArgs = {
+            inherit
+              self
+              username
+              hostname
+              host
+              nix-secrets
+              envVars
+              home-manager
+              isWorkstation
+              dotfiles
+              ;
           };
+          modules = [
+            hostSystemModule
+            ./hosts/${hostname}/configuration.nix
+            disko.nixosModules.disko
+            preservation.nixosModules.default
+          ];
         }
-      );
+      ) hosts;
 
-      linuxWorkstations =
-        map
-          (
-            hostname:
-            let
-              username = hosts.${hostname}.username;
-              updateCmd = "nixos-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname} --sudo";
-              envVars = hosts.${hostname}.environment or { };
-            in
-            {
-              specialArgs = {
-                inherit
-                  self
-                  username
-                  hostname
-                  updateCmd
-                  envVars
-                  ;
-              };
-              modules = [
-                ./workstation/nixos/configuration.nix
-                hostSystemModule
-                home-manager.nixosModules.home-manager
-                homeCfg
-              ];
-            }
-          )
-          [
-            "mango"
-          ];
+      linuxWorkstations = builtins.filter (
+        machine:
+        machine.specialArgs.isWorkstation == true
+        && builtins.match ".*-darwin" machine.specialArgs.host.system == null
+      ) configurations;
+      darwinWorkstations = builtins.filter (
+        machine:
+        machine.specialArgs.isWorkstation == true
+        && builtins.match ".*-darwin" machine.specialArgs.host.system != null
+      ) configurations;
 
-      darwinWorkstations =
-        map
-          (
-            hostname:
-            let
-              username = hosts.${hostname}.username;
-              updateCmd = "sudo darwin-rebuild switch --flake $HOME/Documents/guergeiro/iac/.#${hostname}";
-              envVars = hosts.${hostname}.environment or { };
-            in
-            {
-              specialArgs = {
-                inherit
-                  self
-                  username
-                  hostname
-                  updateCmd
-                  homebrew-core
-                  homebrew-cask
-                  envVars
-                  ;
-              };
-              modules = [
-                ./workstation/darwin/configuration.nix
-                hostSystemModule
-                home-manager.darwinModules.home-manager
-                nix-homebrew.darwinModules.nix-homebrew
-                homeCfg
-              ];
-            }
-          )
-          [
-            "macbook"
-          ];
-
-      linuxServers =
-        map
-          (
-            hostname:
-            let
-              username = hosts.${hostname}.username;
-              publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
-              envVars = hosts.${hostname}.environment or { };
-            in
-            {
-              specialArgs = {
-                inherit
-                  self
-                  username
-                  hostname
-                  publicSshKey
-                  envVars
-                  ;
-              };
-              modules = [
-                disko.nixosModules.disko
-                preservation.nixosModules.default
-                ./servers/${hostname}/configuration.nix
-                hostSystemModule
-              ];
-            }
-          )
-          [
-            "orange"
-            "tangerine"
-          ];
+      linuxServers = builtins.filter (machine: machine.specialArgs.isWorkstation != true) configurations;
 
     in
     {

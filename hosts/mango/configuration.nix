@@ -24,7 +24,7 @@ in
 {
   imports = [
     "${self}/modules/docker.nix"
-    "${self}/workstation/shared/system.nix"
+    "${self}/modules/workstation.nix"
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
