@@ -5,6 +5,7 @@
   envVars,
   hostname,
   nix-secrets,
+  agenix,
   ...
 }:
 let
@@ -49,10 +50,6 @@ in
   };
 
   networking.hostName = hostname;
-  services.openssh = {
-    enable = true;
-    generateHostKeys = false;
-  };
 
   networking.firewall.enable = true;
   networking.dhcpcd.enable = true;

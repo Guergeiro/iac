@@ -3,12 +3,16 @@
   modulesPath,
   pkgs,
   username,
+  agenix,
   ...
 }:
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
+
+    agenix.nixosModules.default
+
     ./hardware-configuration.nix
     ./disk-config.nix
     ./preservation.nix
@@ -18,6 +22,7 @@
     "${self}/modules/docker.nix"
     "${self}/modules/server.nix"
     "${self}/modules/security.nix"
+    "${self}/modules/ssh.nix"
   ];
 
   boot.loader.grub = {

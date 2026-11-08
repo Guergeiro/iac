@@ -1,7 +1,8 @@
 {
   pkgs,
   lib,
-  envVars,
+  config,
+  nix-secrets,
   ...
 }:
 let
@@ -11,6 +12,8 @@ let
   imageFile = null;
 in
 {
+  age.secrets."orange/cloudflare-tunnel.age".path = "${nix-secrets}/orange/cloudflare-tunnel.age";
+
   # Root service
   # When started, this will automatically create all resources and start
   # the containers. When stopped, this will teardown all resources.
@@ -100,8 +103,9 @@ in
       "tunnel"
       "--no-autoupdate"
       "run"
-      "--token"
-      "${envVars.CLOUDFLARE_TUNNEL_TOKEN}"
+    ];
+    environmentFiles = [
+      config.age.secrets."orange/cloudflare-tunnel.age".path
     ];
     networks = [
       "cloudflare-tunnel"

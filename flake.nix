@@ -123,6 +123,7 @@
               nix-homebrew
               homebrew-core
               homebrew-cask
+              agenix
               ;
           };
           modules = [
@@ -176,7 +177,7 @@
             profiles.system = {
               sshUser = "root";
               path =
-                deploy-rs.lib.${hosts.${server.specialArgs.hostname}.system}.activate.nixos
+                deploy-rs.lib.${server.specialArgs.host.system}.activate.nixos
                   self.nixosConfigurations.${server.specialArgs.hostname};
             };
           };
