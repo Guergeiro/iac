@@ -107,6 +107,14 @@
           username = host.username;
           envVars = host.environment or { };
           isWorkstation = host.workstation or false;
+          baseModules = [
+            hostSystemModule
+            ./hosts/${hostname}/configuration.nix
+          ];
+          nixosModules = [
+            disko.nixosModules.disko
+            preservation.nixosModules.default
+          ];
         in
         {
           specialArgs = {
@@ -126,12 +134,8 @@
               agenix
               ;
           };
-          modules = [
-            hostSystemModule
-            ./hosts/${hostname}/configuration.nix
-            disko.nixosModules.disko
-            preservation.nixosModules.default
-          ];
+          modules =
+            baseModules ++ (if builtins.match ".*-darwin" host.system == null then nixosModules else [ ]);
         }
       ) hosts;
 
