@@ -1,17 +1,17 @@
 {
-  self,
+  inputs,
   pkgs,
-  envVars,
   lib,
   hostname,
-  hosts,
-  home-manager,
   host,
-  dotfiles,
-  nix-secrets,
   ...
 }:
 let
+  inherit (inputs) self dotfiles home-manager;
+  inherit (host) username;
+
+  envVars = host.environment or { };
+
   darwinUpdateCmd = "sudo darwin-rebuild switch --flake .#${hostname}";
   nixosUpdateCmd = "nixos-rebuild switch --flake .#${hostname} --sudo";
 
@@ -19,11 +19,10 @@ let
     {
       pkgs,
       hostname,
-      username,
       ...
     }:
     let
-      homeCfg = dotfiles.mkHomeModules pkgs hostname hosts nix-secrets dotfiles;
+      homeCfg = dotfiles.mkHomeModules pkgs hostname false;
     in
     {
       home-manager = {

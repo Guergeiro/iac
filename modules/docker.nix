@@ -1,4 +1,7 @@
-{ username, ... }:
+{ host, ... }:
+let
+  inherit (host) username;
+in
 {
   users.users.${username}.extraGroups = [ "docker" ];
 

@@ -1,17 +1,27 @@
 {
-  self,
+  inputs,
   modulesPath,
   pkgs,
-  username,
-  agenix,
+  host,
   ...
 }:
+let
+  inherit (inputs)
+    self
+    agenix
+    disko
+    preservation
+    ;
+  inherit (host) username;
+in
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
 
     agenix.nixosModules.default
+    disko.nixosModules.disko
+    preservation.nixosModules.default
 
     ./hardware-configuration.nix
     ./disk-config.nix

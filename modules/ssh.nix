@@ -1,10 +1,12 @@
 {
+  inputs,
   lib,
   hostname,
-  nix-secrets,
   ...
 }:
 let
+  inherit (inputs) nix-secrets;
+
   persistencePath = "/persistent/etc/ssh";
 
   privateKeys = {

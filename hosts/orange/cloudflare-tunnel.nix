@@ -1,11 +1,13 @@
 {
+  inputs,
   pkgs,
   lib,
   config,
-  nix-secrets,
   ...
 }:
 let
+  inherit (inputs) nix-secrets;
+
   imageName = "cloudflare/cloudflared";
   imageVersion = "2026.8.2";
   image = "${imageName}:${imageVersion}";

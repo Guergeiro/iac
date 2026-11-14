@@ -3,15 +3,18 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 {
-  self,
+  inputs,
   config,
   pkgs,
-  username,
   hostname,
   lib,
+  host,
   ...
 }:
 let
+  inherit (inputs) self;
+  inherit (host) username;
+
   nameservers = [
     "1.1.1.1"
     "1.0.0.1"

@@ -1,5 +1,15 @@
-{ pkgs, ... }:
 {
+  pkgs,
+  lib,
+  nix-secrets,
+  hostname,
+  ...
+}:
+{
+
+  age.secrets = lib.genAttrs [ "wg_key" ] (name: {
+    file = "${nix-secrets}/${hostname}/${name}.age";
+  });
 
   # enable NAT
   networking.nat.enable = true;

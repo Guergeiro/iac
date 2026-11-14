@@ -1,10 +1,13 @@
 {
-  self,
+  inputs,
   pkgs,
-  username,
-  nix-homebrew,
+  host,
   ...
 }:
+let
+  inherit (inputs) self nix-homebrew;
+  inherit (host) username;
+in
 {
   imports = [
     "${self}/modules/workstation.nix"

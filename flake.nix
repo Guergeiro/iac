@@ -58,26 +58,16 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       nixpkgs-darwin,
       nix-darwin,
-      home-manager,
-      dotfiles,
-      agenix,
       systems,
       deploy-rs,
-      nix-homebrew,
-      homebrew-core,
-      homebrew-cask,
-      nix-secrets,
-      disko,
-      preservation,
       git-format-staged,
       ...
-    }:
+    }@inputs:
     let
-      hosts = builtins.fromJSON (builtins.readFile "${nix-secrets}/hosts.json");
+      hosts = builtins.fromJSON (builtins.readFile "${inputs.nix-secrets}/hosts.json");
 
       forAllSystems =
         function:
@@ -100,95 +90,58 @@
         }
       );
 
-      configurations = map (
-        hostname:
-        let
-          host = builtins.fromJSON (builtins.readFile "${nix-secrets}/${hostname}/host.json");
-          username = host.username;
-          envVars = host.environment or { };
-          isWorkstation = host.workstation or false;
-          baseModules = [
-            hostSystemModule
-            ./hosts/${hostname}/configuration.nix
-          ];
-          nixosModules = [
-            disko.nixosModules.disko
-            preservation.nixosModules.default
-          ];
-        in
-        {
-          specialArgs = {
-            inherit
-              self
-              username
-              hostname
-              host
-              nix-secrets
-              envVars
-              home-manager
-              isWorkstation
-              dotfiles
-              nix-homebrew
-              homebrew-core
-              homebrew-cask
-              agenix
-              ;
-          };
-          modules =
-            baseModules ++ (if builtins.match ".*-darwin" host.system == null then nixosModules else [ ]);
-        }
-      ) hosts;
-
-      linuxWorkstations = builtins.filter (
-        machine:
-        machine.specialArgs.isWorkstation == true
-        && builtins.match ".*-darwin" machine.specialArgs.host.system == null
-      ) configurations;
-      darwinWorkstations = builtins.filter (
-        machine:
-        machine.specialArgs.isWorkstation == true
-        && builtins.match ".*-darwin" machine.specialArgs.host.system != null
-      ) configurations;
-
-      linuxServers = builtins.filter (machine: machine.specialArgs.isWorkstation != true) configurations;
+      configurations = nixpkgs.lib.foldl' nixpkgs.lib.recursiveUpdate { } (
+        map (
+          hostname:
+          let
+            host = builtins.fromJSON (builtins.readFile "${inputs.nix-secrets}/${hostname}/host.json");
+            specialArgs = {
+              inherit
+                inputs
+                hostname
+                host
+                ;
+            };
+            modules = [
+              hostSystemModule
+              ./hosts/${hostname}/configuration.nix
+            ];
+            isDarwin = builtins.match ".*-darwin" host.system != null;
+            isWorkstation = host.workstation or false;
+          in
+          if isDarwin then
+            {
+              darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
+                inherit specialArgs modules;
+              };
+            }
+          else
+            let
+              sys = nixpkgs.lib.nixosSystem {
+                inherit specialArgs modules;
+              };
+              env = host.environment or { };
+            in
+            {
+              nixosConfigurations.${hostname} = sys;
+            }
+            // nixpkgs.lib.optionalAttrs (!isWorkstation) {
+              deploy.nodes.${hostname} = {
+                hostname = "${hostname}.${env.BASE_DOMAIN}";
+                profiles.system = {
+                  sshUser = "root";
+                  path = deploy-rs.lib.${host.system}.activate.nixos sys;
+                };
+              };
+            }
+        ) hosts
+      );
 
     in
-    {
-      darwinConfigurations = builtins.listToAttrs (
-        map (machine: {
-          name = machine.specialArgs.hostname;
-          value = nix-darwin.lib.darwinSystem {
-            specialArgs = machine.specialArgs;
-            modules = machine.modules;
-          };
-        }) darwinWorkstations
-      );
-      nixosConfigurations = builtins.listToAttrs (
-        map (machine: {
-          name = machine.specialArgs.hostname;
-          value = nixpkgs.lib.nixosSystem {
-            specialArgs = machine.specialArgs;
-            modules = machine.modules;
-          };
-        }) (linuxWorkstations ++ linuxServers)
-      );
-
-      deploy.nodes = builtins.listToAttrs (
-        map (server: {
-          name = server.specialArgs.hostname;
-          value = {
-            hostname = "${server.specialArgs.hostname}.${server.specialArgs.envVars.BASE_DOMAIN}"; # Initially we need the ip address
-            profiles.system = {
-              sshUser = "root";
-              path =
-                deploy-rs.lib.${server.specialArgs.host.system}.activate.nixos
-                  self.nixosConfigurations.${server.specialArgs.hostname};
-            };
-          };
-        }) linuxServers
-      );
+    configurations
+    // {
       checks =
-        (builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib)
+        (builtins.mapAttrs (system: deployLib: deployLib.deployChecks inputs.self.deploy) deploy-rs.lib)
         // forAllSystems (pkgs: {
           nix-fmt =
             pkgs.runCommand "check-nix-fmt"
@@ -255,7 +208,7 @@
             env = hooksEnv;
           };
           root-shell = pkgs.mkShellNoCC {
-            inputsFrom = [ self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
+            inputsFrom = [ inputs.self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
 
             packages = [
               pkgs.nixfmt
@@ -263,13 +216,13 @@
               pkgs.git-crypt
               anywhereScript
               deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.default
-              agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
+              inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
             ];
 
             env = hooksEnv;
           };
           tf-shell = pkgs.mkShellNoCC {
-            inputsFrom = [ self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
+            inputsFrom = [ inputs.self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
 
             packages = [
               pkgs.opentofu

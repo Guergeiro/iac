@@ -1,4 +1,12 @@
-{ pkgs, username, ... }:
+{
+  pkgs,
+  host,
+  ...
+}:
+let
+
+  inherit (host) username;
+in
 {
   environment.shells = [
     pkgs.bashInteractive

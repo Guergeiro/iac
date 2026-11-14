@@ -1,10 +1,12 @@
 {
   username,
   config,
-  homebrew-core,
-  homebrew-cask,
+  inputs,
   ...
 }:
+let
+  inherit (inputs) homebrew-core homebrew-cask;
+in
 {
   homebrew = {
     enable = true;

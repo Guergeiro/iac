@@ -1,14 +1,16 @@
 {
+  inputs,
   pkgs,
-  username,
   lib,
-  envVars,
   hostname,
-  nix-secrets,
-  agenix,
+  host,
   ...
 }:
 let
+  inherit (inputs) nix-secrets;
+  inherit (host) username;
+
+  envVars = host.environment or { };
   publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
 in
 {
