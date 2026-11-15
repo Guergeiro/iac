@@ -1,10 +1,4 @@
-{
-  inputs,
-  modulesPath,
-  pkgs,
-  host,
-  ...
-}:
+{ inputs, ... }:
 let
   inherit (inputs)
     self
@@ -12,54 +6,67 @@ let
     disko
     preservation
     ;
-  inherit (host) username;
 in
 {
-  imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-    (modulesPath + "/profiles/qemu-guest.nix")
+  flake.nixosModules."orange-configuration" =
+    {
+      pkgs,
+      modulesPath,
+      host,
+      hostname,
+      ...
+    }:
+    let
+      inherit (host) username;
+    in
+    {
+      imports = [
+        (modulesPath + "/installer/scan/not-detected.nix")
+        (modulesPath + "/profiles/qemu-guest.nix")
 
-    agenix.nixosModules.default
-    disko.nixosModules.disko
-    preservation.nixosModules.default
+        agenix.nixosModules.default
+        disko.nixosModules.disko
+        preservation.nixosModules.default
 
-    ./hardware-configuration.nix
-    ./disk-config.nix
-    ./preservation.nix
-    ./cloudflare-tunnel.nix
-    ./homeassistant.nix
-    "${self}/modules/nix.nix"
-    "${self}/modules/docker.nix"
-    "${self}/modules/server.nix"
-    "${self}/modules/security.nix"
-    "${self}/modules/ssh.nix"
-  ];
+        self.nixosModules."${hostname}-hardware-configuration"
+        self.nixosModules."${hostname}-disk-config"
+        self.nixosModules."${hostname}-preservation"
+        self.nixosModules."${hostname}-cloudflare-tunnel"
+        self.nixosModules."${hostname}-homeassistant"
 
-  boot.loader.grub = {
-    efiSupport = true;
-    efiInstallAsRemovable = true;
-  };
+        self.nixosModules.nix
+        self.nixosModules.docker
+        self.nixosModules.server
+        self.nixosModules.security
+        self.nixosModules.ssh
+      ];
 
-  environment.systemPackages = with pkgs; [
-    curl
-    git
-    neovim
-    docker
-    coreutils
-  ];
+      boot.loader.grub = {
+        efiSupport = true;
+        efiInstallAsRemovable = true;
+      };
 
-  environment.variables = {
-    EDITOR = "${pkgs.neovim}/bin/nvim";
-  };
+      environment.systemPackages = with pkgs; [
+        curl
+        git
+        neovim
+        docker
+        coreutils
+      ];
 
-  users.users.${username} = {
-    isNormalUser = true;
-    # initialPassword = "12345"; # This is a placeholder password. Generate one after with mkpasswd
-    hashedPasswordFile = "/persistent/passwd"; # mkpasswd -m yescrypt "password" > /persistent/passwd
-    extraGroups = [
-      "wheel"
-    ];
-  };
+      environment.variables = {
+        EDITOR = "${pkgs.neovim}/bin/nvim";
+      };
 
-  system.stateVersion = "26.05"; # Did you read the comment?
+      users.users.${username} = {
+        isNormalUser = true;
+        # initialPassword = "12345"; # This is a placeholder password. Generate one after with mkpasswd
+        hashedPasswordFile = "/persistent/passwd"; # mkpasswd -m yescrypt "password" > /persistent/passwd
+        extraGroups = [
+          "wheel"
+        ];
+      };
+
+      system.stateVersion = "26.05"; # Did you read the comment?
+    };
 }

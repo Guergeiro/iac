@@ -11,6 +11,8 @@
     nix-darwin.url = "github:nix-darwin/nix-darwin?ref=nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
 
+    import-tree.url = "github:denful/import-tree";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     systems.url = "github:nix-systems/default";
 
     agenix.url = "github:ryantm/agenix";
@@ -46,6 +48,8 @@
     dotfiles.inputs.nix-secrets.follows = "nix-secrets";
     dotfiles.inputs.agenix.follows = "agenix";
     dotfiles.inputs.systems.follows = "systems";
+    dotfiles.inputs.import-tree.follows = "import-tree";
+    dotfiles.inputs.flake-parts.follows = "flake-parts";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
@@ -57,203 +61,17 @@
   };
 
   outputs =
-    {
-      nixpkgs,
-      nixpkgs-darwin,
-      nix-darwin,
-      systems,
-      deploy-rs,
-      git-format-staged,
-      ...
-    }@inputs:
-    let
-      hosts = builtins.fromJSON (builtins.readFile "${inputs.nix-secrets}/hosts.json");
+    inputs:
 
-      forAllSystems =
-        function:
-        nixpkgs.lib.genAttrs (import systems) (
-          system:
-          let
-            pkgs =
-              if builtins.match ".*-darwin" system != null then
-                nixpkgs-darwin.legacyPackages.${system}
-              else
-                nixpkgs.legacyPackages.${system};
-          in
-          function pkgs
-        );
-
-      # Read: https://isabelroses.com/blog/im-not-mad-im-disappointed/
-      hostSystemModule = (
-        { host, ... }: {
-          nixpkgs.hostPlatform = host.system;
-        }
-      );
-
-      configurations = nixpkgs.lib.foldl' nixpkgs.lib.recursiveUpdate { } (
-        map (
-          hostname:
-          let
-            host = builtins.fromJSON (builtins.readFile "${inputs.nix-secrets}/${hostname}/host.json");
-            specialArgs = {
-              inherit
-                inputs
-                hostname
-                host
-                ;
-            };
-            modules = [
-              hostSystemModule
-              ./hosts/${hostname}/configuration.nix
-            ];
-            isDarwin = builtins.match ".*-darwin" host.system != null;
-            isWorkstation = host.workstation or false;
-          in
-          if isDarwin then
-            {
-              darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
-                inherit specialArgs modules;
-              };
-            }
-          else
-            let
-              sys = nixpkgs.lib.nixosSystem {
-                inherit specialArgs modules;
-              };
-              env = host.environment or { };
-            in
-            {
-              nixosConfigurations.${hostname} = sys;
-            }
-            // nixpkgs.lib.optionalAttrs (!isWorkstation) {
-              deploy.nodes.${hostname} = {
-                hostname = "${hostname}.${env.BASE_DOMAIN}";
-                profiles.system = {
-                  sshUser = "root";
-                  path = deploy-rs.lib.${host.system}.activate.nixos sys;
-                };
-              };
-            }
-        ) hosts
-      );
-
-    in
-    configurations
-    // {
-      checks =
-        (builtins.mapAttrs (system: deployLib: deployLib.deployChecks inputs.self.deploy) deploy-rs.lib)
-        // forAllSystems (pkgs: {
-          nix-fmt =
-            pkgs.runCommand "check-nix-fmt"
-              {
-                buildInputs = [ pkgs.nixfmt ];
-              }
-              ''
-                ${pkgs.nixfmt}/bin/nixfmt --check .
-                touch $out
-              '';
-
-          tofu-fmt =
-            pkgs.runCommand "check-tofu-fmt"
-              {
-                buildInputs = [
-                  pkgs.opentofu
-                  pkgs.coreutils
-                ];
-              }
-              ''
-                ${pkgs.opentofu}/bin/tofu fmt -check -recursive ${./infra}
-                ${pkgs.coreutils}/bin/touch $out
-              '';
-
-        });
-
-      devShells = forAllSystems (
-        pkgs:
-        let
-          hookScripts = {
-            pre-commit = pkgs.writeShellScript "pre-commit" ''
-              format_staged_nix_files() {
-                git-format-staged -f '${pkgs.nixfmt}/bin/nixfmt --filename {}' '*.nix'
-              }
-
-              format_staged_tf_files() {
-                git-format-staged -f '${pkgs.opentofu}/bin/tofu fmt {}' '*.tf'
-              }
-
-              format_staged_nix_files
-              format_staged_tf_files
-            '';
-            post-commit = pkgs.writeShellScript "post-commit" ''
-              exec ${pkgs.git}/bin/git update-index -g
-            '';
-          };
-          hooksEnv = {
-            GIT_CONFIG_COUNT = "1";
-            GIT_CONFIG_KEY_0 = "core.hooksPath";
-            GIT_CONFIG_VALUE_0 = pkgs.linkFarm "git-hooks" (
-              pkgs.lib.mapAttrsToList (name: path: {
-                inherit name path;
-              }) hookScripts
-            );
-          };
-
-          anywhereScript = pkgs.writeShellScriptBin "nix-anywhere" ''
-            ${pkgs.nix}/bin/nix run github:nix-community/nixos-anywhere -- --flake $1 --target-host nixos@$2
-          '';
-        in
-        {
-          default = pkgs.mkShellNoCC {
-            packages = [ git-format-staged.packages.${pkgs.stdenv.hostPlatform.system}.default ];
-            env = hooksEnv;
-          };
-          root-shell = pkgs.mkShellNoCC {
-            inputsFrom = [ inputs.self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
-
-            packages = [
-              pkgs.nixfmt
-              pkgs.nixd
-              pkgs.git-crypt
-              anywhereScript
-              deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.default
-              inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
-            ];
-
-            env = hooksEnv;
-          };
-          tf-shell = pkgs.mkShellNoCC {
-            inputsFrom = [ inputs.self.devShells.${pkgs.stdenv.hostPlatform.system}.default ];
-
-            packages = [
-              pkgs.opentofu
-              # Create a wrapper executable named "terraform" that proxies to opentofu
-              (pkgs.writeShellScriptBin "terraform" ''
-                exec ${pkgs.opentofu}/bin/tofu "$@"
-              '')
-
-              (pkgs.writeShellScriptBin "tf-init" ''
-                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 init -backend-config=../../env-backend/$1.tfbackend -var-file=../../env-vars/$1.tfvars
-              '')
-              (pkgs.writeShellScriptBin "tf-validate" ''
-                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 validate -var-file=../../env-vars/$1.tfvars
-              '')
-              (pkgs.writeShellScriptBin "tf-plan" ''
-                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 plan -var-file=../../env-vars/$1.tfvars -out=tfplan
-              '')
-              (pkgs.writeShellScriptBin "tf-apply" ''
-                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 apply tfplan
-              '')
-              (pkgs.writeShellScriptBin "tf-destroy-plan" ''
-                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 plan -destroy -var-file=../../env-vars/$1.tfvars -out=tfdestroyplan
-              '')
-              (pkgs.writeShellScriptBin "tf-destroy-apply" ''
-                exec ${pkgs.opentofu}/bin/tofu -chdir=hosts/$1 apply tfdestroyplan
-              '')
-            ];
-
-            env = hooksEnv;
-          };
-        }
-      );
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = import inputs.systems;
+      imports = [
+        (inputs.import-tree [
+          ./flake
+          ./hosts
+          ./modules
+          ./shells
+        ])
+      ];
     };
 }

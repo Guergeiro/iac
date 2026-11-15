@@ -1,58 +1,63 @@
-{
-  inputs,
-  pkgs,
-  lib,
-  hostname,
-  host,
-  ...
-}:
+{ inputs, ... }:
 let
   inherit (inputs) nix-secrets;
-  inherit (host) username;
-
-  envVars = host.environment or { };
   publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
 in
 {
-  nix.settings.trusted-users = [ "root" ];
+  flake.nixosModules.server =
+    {
+      pkgs,
+      lib,
+      hostname,
+      host,
+      ...
+    }:
+    let
+      inherit (host) username;
 
-  users.users.root = {
-    openssh.authorizedKeys.keys = [
-      publicSshKey
-    ];
-  };
-  users.users.${username} = {
-    openssh.authorizedKeys.keys = [
-      publicSshKey
-    ];
-  };
-  users.mutableUsers = false;
+      envVars = host.environment or { };
+    in
+    {
+      nix.settings.trusted-users = [ "root" ];
 
-  environment.variables = lib.mkMerge [
-    envVars
-  ];
+      users.users.root = {
+        openssh.authorizedKeys.keys = [
+          publicSshKey
+        ];
+      };
+      users.users.${username} = {
+        openssh.authorizedKeys.keys = [
+          publicSshKey
+        ];
+      };
+      users.mutableUsers = false;
 
-  # Reboot the system everyday
-  systemd.services."scheduled-reboot" = {
-    path = [ pkgs.systemd ];
-    description = "Reboots the system.";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.systemd}/bin/systemctl reboot";
+      environment.variables = lib.mkMerge [
+        envVars
+      ];
+
+      # Reboot the system everyday
+      systemd.services."scheduled-reboot" = {
+        path = [ pkgs.systemd ];
+        description = "Reboots the system.";
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.systemd}/bin/systemctl reboot";
+        };
+      };
+      systemd.timers."scheduled-reboot" = {
+        description = "Timer to reboot the system at 4:50 am.";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = "*-*-* 04:50:00";
+          Unit = "scheduled-reboot.service";
+          Persistent = true;
+        };
+      };
+
+      networking.hostName = hostname;
+
+      networking.firewall.enable = true;
+      networking.dhcpcd.enable = true;
     };
-  };
-  systemd.timers."scheduled-reboot" = {
-    description = "Timer to reboot the system at 4:50 am.";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "*-*-* 04:50:00";
-      Unit = "scheduled-reboot.service";
-      Persistent = true;
-    };
-  };
-
-  networking.hostName = hostname;
-
-  networking.firewall.enable = true;
-  networking.dhcpcd.enable = true;
 }
