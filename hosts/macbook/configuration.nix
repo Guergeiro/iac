@@ -6,10 +6,13 @@ in
   flake.darwinModules."macbook-configuration" =
     {
       pkgs,
-      username,
       hostname,
+      host,
       ...
     }:
+    let
+      inherit (host) username;
+    in
     {
       imports = [
         nix-homebrew.darwinModules.nix-homebrew

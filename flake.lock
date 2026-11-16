@@ -225,11 +225,11 @@
         "vim-smartpairs": "vim-smartpairs"
       },
       "locked": {
-        "lastModified": 1794784498,
-        "narHash": "sha256-tA/Iz26W8vOA/+zCz+hHBuVeVYO1QJm7AqkVw0L2B8I=",
+        "lastModified": 1794830414,
+        "narHash": "sha256-KlBy7KFzV4ZbtbIwx+wzS4YH1nU0aUFYpM8oraHO5yk=",
         "ref": "refs/heads/master",
-        "rev": "58082d7b8ff75dc65492c7b21b457cfa289c24b2",
-        "revCount": 534,
+        "rev": "e692c2a0aeb1a916ea4a94a3eb01af6453d27b68",
+        "revCount": 535,
         "submodules": true,
         "type": "git",
         "url": "ssh://git@github.com/guergeiro/dotfiles.git"
@@ -256,28 +256,6 @@
       }
     },
     "flake-parts": {
-      "inputs": {
-        "nixpkgs-lib": [
-          "dotfiles",
-          "nur",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1733312601,
-        "narHash": "sha256-4pDvzqnegAfRkPwO3wmwBhVi/Sye1mzps0zHWYnP88c=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "205b12d8b7cd4802fbcb8e8ef6a0f1408781a4f9",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
-    "flake-parts_2": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
       },
@@ -571,7 +549,10 @@
     },
     "nur": {
       "inputs": {
-        "flake-parts": "flake-parts",
+        "flake-parts": [
+          "dotfiles",
+          "flake-parts"
+        ],
         "nixpkgs": [
           "dotfiles",
           "nixpkgs"
@@ -644,7 +625,7 @@
         "deploy-rs": "deploy-rs",
         "disko": "disko",
         "dotfiles": "dotfiles",
-        "flake-parts": "flake-parts_2",
+        "flake-parts": "flake-parts",
         "git-format-staged": "git-format-staged",
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
