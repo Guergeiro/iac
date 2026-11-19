@@ -1,18 +1,67 @@
+{ inputs, ... }:
+let
+  vars = [
+    "cf_api_token"
+    "cf_api_token_page_rules"
+    "hetzner_api_token"
+  ];
+
+  secrets = [
+    "access_key_id"
+    "secret_access_key"
+  ];
+in
 {
+
+  imports = [
+    inputs.agenix-shell.flakeModules.default
+  ];
+
+  agenix-shell = {
+    secrets = (
+      builtins.listToAttrs (
+        map (var: {
+          name = var;
+          value = {
+            file = "${inputs.nix-secrets}/infra/${var}.age";
+            name = "TF_VAR_${var}";
+          };
+        }) vars
+      )
+      // (builtins.listToAttrs (
+        map (secret: {
+          name = secret;
+          value = {
+            file = "${inputs.nix-secrets}/infra/${secret}.age";
+            name = "AWS_${inputs.nixpkgs.lib.toUpper secret}";
+          };
+        }) secrets
+      ))
+    );
+  };
+
   perSystem =
     {
       pkgs,
       self',
+      config,
+      lib,
       ...
     }:
     let
       inherit (import ./_hooks.nix pkgs) hooksEnv;
     in
     {
+
       devShells.tf-shell = pkgs.mkShellNoCC {
         inputsFrom = [ self'.devShells.default ];
 
+        shellHook = ''
+          source ${lib.getExe config.agenix-shell.installationScript}
+        '';
+
         packages = [
+          pkgs.openssh
           pkgs.opentofu
           # Create a wrapper executable named "terraform" that proxies to opentofu
           (pkgs.writeShellScriptBin "terraform" ''
@@ -39,7 +88,9 @@
           '')
         ];
 
-        env = hooksEnv;
+        env = hooksEnv // {
+          TF_VAR_ssh_public_key_location = "${inputs.nix-secrets}/id_ed25519.pub";
+        };
       };
     };
 }

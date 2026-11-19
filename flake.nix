@@ -8,7 +8,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
 
-    nix-darwin.url = "github:nix-darwin/nix-darwin?ref=nix-darwin-26.05";
+    nix-darwin.url = "github:guergeiro/nix-darwin?ref=nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
 
     import-tree.url = "github:denful/import-tree";
@@ -17,6 +17,9 @@
 
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
+    agenix-shell.url = "github:aciceri/agenix-shell";
+    agenix-shell.inputs.nixpkgs.follows = "nixpkgs";
+    agenix-shell.inputs.flake-parts.follows = "flake-parts";
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -62,10 +65,10 @@
 
   outputs =
     inputs:
-
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
       imports = [
+        inputs.nix-darwin.flakeModules.default
         (inputs.import-tree [
           ./flake
           ./hosts

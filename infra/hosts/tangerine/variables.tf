@@ -13,6 +13,10 @@ variable "hetzner_api_token" {
   sensitive = true
 }
 
+variable "ssh_public_key_location" {
+  type = string
+}
+
 variable "account_id" {
   type = string
 }
@@ -31,7 +35,6 @@ variable "zone_b" {
   })
   default = null
 }
-
 variable "tags" {
   default = ["owner:terraform", "repository:iac"]
 }
