@@ -1,8 +1,4 @@
-{ inputs, ... }:
-let
-  inherit (inputs) nix-secrets;
-  publicSshKey = builtins.readFile "${nix-secrets}/id_ed25519.pub";
-in
+{ ... }:
 {
   flake.nixosModules.server =
     {
@@ -13,23 +9,11 @@ in
       ...
     }:
     let
-      inherit (host) username;
-
       envVars = host.environment or { };
     in
     {
       nix.settings.trusted-users = [ "root" ];
 
-      users.users.root = {
-        openssh.authorizedKeys.keys = [
-          publicSshKey
-        ];
-      };
-      users.users.${username} = {
-        openssh.authorizedKeys.keys = [
-          publicSshKey
-        ];
-      };
       users.mutableUsers = false;
 
       environment.variables = lib.mkMerge [

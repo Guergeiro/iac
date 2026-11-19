@@ -31,6 +31,7 @@ in
         self.nixosModules."${hostname}-hardware-configuration"
         self.nixosModules."${hostname}-disk-config"
         self.nixosModules."${hostname}-preservation"
+        self.nixosModules."${hostname}-networking"
 
         self.nixosModules.nix
         self.nixosModules.docker
@@ -63,18 +64,6 @@ in
         extraGroups = [
           "wheel"
         ];
-      };
-
-      networking.interfaces.enp1s0.ipv6.addresses = [
-        {
-          address = "2a01:4f9:c012:5531::1";
-          prefixLength = 64;
-        }
-      ];
-
-      networking.defaultGateway6 = {
-        address = "fe80::1";
-        interface = "enp1s0";
       };
 
       system.stateVersion = "26.05"; # Did you read the comment?

@@ -31,6 +31,8 @@ in
         self.nixosModules."${hostname}-hardware-configuration"
         self.nixosModules."${hostname}-disk-config"
         self.nixosModules."${hostname}-preservation"
+        self.nixosModules."${hostname}-networking"
+
         self.nixosModules."${hostname}-cloudflare-tunnel"
         self.nixosModules."${hostname}-homeassistant"
 
