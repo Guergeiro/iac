@@ -1,7 +1,7 @@
 { inputs, self, ... }:
 let
   hostname = "tangerine";
-  host = builtins.fromJSON (builtins.readFile "${inputs.nix-secrets}/${hostname}/host.json");
+  host = import "${inputs.nix-secrets}/${hostname}/host.nix";
 in
 {
   flake = {

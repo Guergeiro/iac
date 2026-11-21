@@ -1,7 +1,7 @@
 { inputs, self, ... }:
 let
   hostname = "orange";
-  host = builtins.fromJSON (builtins.readFile "${inputs.nix-secrets}/${hostname}/host.json");
+  host = import "${inputs.nix-secrets}/${hostname}/host.nix";
 in
 {
   flake = {
@@ -18,7 +18,7 @@ in
       ];
     };
     deploy.nodes.${hostname} = {
-      hostname = "${hostname}.${host.environment.BASE_DOMAIN}"; # Initially we need the ip address
+      hostname = "10.100.0.2"; # Initially we need the ip address
       profiles.system = {
         sshUser = "root";
         path = inputs.deploy-rs.lib.${host.system}.activate.nixos self.nixosConfigurations.${hostname};

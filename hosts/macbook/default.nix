@@ -1,7 +1,7 @@
 { inputs, self, ... }:
 let
   hostname = "macbook";
-  host = builtins.fromJSON (builtins.readFile "${inputs.nix-secrets}/${hostname}/host.json");
+  host = import "${inputs.nix-secrets}/${hostname}/host.nix";
 in
 {
   flake.darwinConfigurations.${hostname} = inputs.nix-darwin.lib.darwinSystem {
