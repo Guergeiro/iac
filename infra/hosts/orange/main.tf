@@ -34,18 +34,3 @@ resource "cloudflare_page_rule" "redirects" {
     }
   }
 }
-
-moved {
-  from = cloudflare_zero_trust_tunnel_cloudflared.tunnel
-  to   = module.tunnel.cloudflare_zero_trust_tunnel_cloudflared.tunnel
-}
-
-moved {
-  from = cloudflare_zero_trust_tunnel_cloudflared_config.tunnel_config
-  to   = module.tunnel.cloudflare_zero_trust_tunnel_cloudflared_config.tunnel_config
-}
-
-moved {
-  from = cloudflare_dns_record.tunnel_records_zone_a
-  to   = module.tunnel.cloudflare_dns_record.tunnel_records_zone_a
-}

@@ -12,12 +12,25 @@ resource "hcloud_primary_ip" "ipv6" {
   auto_delete = false
 }
 
-resource "hcloud_firewall" "firewall" {
-  name = "tangerine-firewall"
+resource "hcloud_firewall" "firewall-ssh" {
+  name = "firewall-ssh"
   rule {
     direction = "in"
     protocol  = "tcp"
     port      = "22"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+}
+
+resource "hcloud_firewall" "firewall-wireguard" {
+  name = "firewall-wireguard"
+  rule {
+    direction = "in"
+    protocol  = "udp"
+    port      = "51820"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -37,7 +50,7 @@ resource "hcloud_server" "server" {
     ipv6_enabled = true
     ipv6         = hcloud_primary_ip.ipv6.id
   }
-  firewall_ids = [hcloud_firewall.firewall.id]
+  firewall_ids = [hcloud_firewall.firewall-ssh.id, hcloud_firewall.firewall-wireguard.id]
 }
 
 resource "cloudflare_dns_record" "records_zone_a" {
@@ -54,28 +67,36 @@ resource "cloudflare_dns_record" "records_zone_a" {
   comment = join(" - ", var.tags)
 }
 
-resource "hcloud_ssh_key" "main" {
-  name       = "id_ed25519"
-  public_key = file(var.ssh_public_key_location)
+locals {
+  master_key_location = "${var.secrets_location}/id_ed25519.pub"
+  authorized_keys = {
+    "host-orange" = "${var.secrets_location}/orange/ssh_host_ed25519_key.pub"
+    "master"      = local.master_key_location
+  }
 }
 
-locals {
-  target_rfc_key = "id_rfc.pub"
+resource "hcloud_ssh_key" "main" {
+  for_each   = local.authorized_keys
+  name       = each.key
+  public_key = file(each.value)
 }
+
 # Convert the SSH key to RFC4716 format for Hetzner
 resource "terraform_data" "convert_key" {
+  for_each = local.authorized_keys
   triggers_replace = [
-    filemd5(var.ssh_public_key_location)
+    filemd5(each.value)
   ]
 
   provisioner "local-exec" {
-    command = "ssh-keygen -e -f ${var.ssh_public_key_location} > ${local.target_rfc_key}"
+    command = "ssh-keygen -e -f ${each.value} > id_rfc_${basename(each.value)}"
   }
 }
 
 # 2. Read the generated file once the command finishes
 data "local_file" "rfc4716_key" {
-  filename   = local.target_rfc_key
+  for_each   = local.authorized_keys
+  filename   = "id_rfc_${basename(each.value)}"
   depends_on = [terraform_data.convert_key]
 }
 
@@ -93,10 +114,7 @@ resource "hcloud_storage_box" "backups" {
   # required
   password = random_password.backups_password.result
 
-  ssh_keys = [
-    hcloud_ssh_key.main.public_key,
-    data.local_file.rfc4716_key.content
-  ]
+  ssh_keys = concat([for key in hcloud_ssh_key.main : key.public_key], [for key in data.local_file.rfc4716_key : key.content])
 
   access_settings = {
     ssh_enabled          = true

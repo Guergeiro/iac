@@ -89,7 +89,7 @@ in
         ];
 
         env = hooksEnv // {
-          TF_VAR_ssh_public_key_location = "${inputs.nix-secrets}/id_ed25519.pub";
+          TF_VAR_secrets_location = "${inputs.nix-secrets}";
         };
       };
     };

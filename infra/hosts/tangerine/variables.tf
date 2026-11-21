@@ -13,7 +13,7 @@ variable "hetzner_api_token" {
   sensitive = true
 }
 
-variable "ssh_public_key_location" {
+variable "secrets_location" {
   type = string
 }
 
