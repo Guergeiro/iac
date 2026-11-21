@@ -35,6 +35,7 @@ in
 
         self.nixosModules."${hostname}-cloudflare-tunnel"
         self.nixosModules."${hostname}-homeassistant"
+        self.nixosModules."${hostname}-borgbackup"
 
         self.nixosModules.nix
         self.nixosModules.docker
