@@ -1,5 +1,9 @@
-{ self, ... }:
+{ inputs, self, ... }:
 let
+
+  inherit (inputs)
+    agenix
+    ;
   nameservers = [
     "1.1.1.1"
     "1.0.0.1"
@@ -24,9 +28,17 @@ in
     in
     {
       imports = [
+        agenix.nixosModules.default
+
         self.nixosModules."${hostname}-hardware-configuration"
+        self.nixosModules."${hostname}-networking"
         self.nixosModules.workstation
         self.nixosModules.docker
+      ];
+
+      age.identityPaths = [
+        "${config.users.users.${username}.home}/Documents/guergeiro/iac/nix-secrets/root"
+        "${config.users.users.${username}.home}/.ssh/id_ed25519"
       ];
 
       # Bootloader.

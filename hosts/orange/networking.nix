@@ -34,11 +34,11 @@ in
         peers = [
           {
             publicKey = builtins.readFile "${nix-secrets}/tangerine/wg_key.pub";
-            endpoint = "tangerine.${envVars.BASE_DOMAIN}:51820";
+            endpoint = "${envVars.TANGERINE_DOMAIN}:51820";
             persistentKeepalive = 25;
             allowedIPs = [
-              "${wireguardIpv4Address}.2/32"
-              "${wireguardIpv6Address}::2/128"
+              "${wireguardIpv4Address}.0/24"
+              "${wireguardIpv6Address}::/64"
               # Uncomment the following lines to route all traffic through the VPN
               # "0.0.0.0/0"
               # "::/0"

@@ -10,6 +10,7 @@ let
 
   allowedPeers = [
     "orange"
+    "mango"
   ];
 
   allowedPeersKeys = map (peer: builtins.readFile "${nix-secrets}/${peer}/wg_key.pub") allowedPeers;

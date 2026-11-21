@@ -13,7 +13,7 @@ in
     }:
     let
       imageName = "cloudflare/cloudflared";
-      imageVersion = "2026.8.2";
+      imageVersion = "2026.11.1";
       image = "${imageName}:${imageVersion}";
       imageFile = null;
     in

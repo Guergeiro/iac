@@ -2,8 +2,8 @@
   flake.nixosModules."orange-homeassistant" =
     { lib, pkgs, ... }:
     let
-      imageName = "guergeiro/homeassistant-hacs";
-      imageVersion = "2026.8.3";
+      imageName = "homeassistant/home-assistant";
+      imageVersion = "2026.11.1";
       image = "${imageName}:${imageVersion}";
       imageFile = null;
 
