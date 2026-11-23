@@ -91,7 +91,7 @@
         description = "Timer to stop the Homeassisntant stack at 4:40 am.";
         wantedBy = [ "timers.target" ];
         timerConfig = {
-          OnCalendar = "*-*-* 04:40:00";
+          OnCalendar = "*-*-* 04:30:00";
           Unit = "stop-docker-homeassistant-root.service";
           Persistent = true;
         };
@@ -122,7 +122,7 @@
         description = "Timer to prune old media files from Home Assistant.";
         wantedBy = [ "timers.target" ];
         timerConfig = {
-          OnCalendar = "*-*-* 04:45:00";
+          OnCalendar = "*-*-* 04:35:00";
           Unit = "prune-old-media.service";
           Persistent = true;
         };

@@ -8,8 +8,9 @@
       ...
     }:
     let
-      sshCommand = "${pkgs.openssh}/bin/ssh -p 23 -i ${config.age.secrets.ssh_host_ed25519_key.path}";
+      sshCommand = "${pkgs.openssh}/bin/ssh -i ${config.age.secrets.ssh_host_ed25519_key.path} -o 'StrictHostKeyChecking=no'";
       storagebox = "u722544@u722544.your-storagebox.de";
+      backupDir = "/home/backups/orange/homeassistant";
     in
     {
       age.secrets."backups_passphrase".file = "${inputs.nix-secrets}/backups_passphrase.age";
@@ -26,7 +27,6 @@
         ];
         extraCreateArgs = [
           "--stats"
-          "--checkpoint-interval 600"
         ];
         encryption = {
           mode = "repokey";
@@ -35,15 +35,15 @@
         environment = {
           BORG_RSH = "${sshCommand}";
         };
-        paths = [
-          "/root/homeassistant"
-        ];
-        startAt = "*-*-* 04:45:00";
+        paths = "/root/homeassistant";
+        doInit = true;
+        startAt = "*-*-* 04:40:00";
         persistentTimer = true;
         preHook = ''
-          ${sshCommand} ${storagebox} "mkdir -p /home/backups/orange/homeassistant"
+          ${pkgs.systemd}/bin/systemctl stop docker-homeassistant-root.target
+          ${sshCommand} -p23 ${storagebox} "mkdir -p ${backupDir}"
         '';
-        repo = "ssh://${storagebox}:23/home/backups/orange/homeassistant";
+        repo = "ssh://${storagebox}:23${backupDir}";
       };
     };
 }

@@ -30,10 +30,10 @@
         };
       };
       systemd.timers."scheduled-reboot" = {
-        description = "Timer to reboot the system at 4:50 am.";
+        description = "Timer to reboot the system at 4:55 am.";
         wantedBy = [ "timers.target" ];
         timerConfig = {
-          OnCalendar = "*-*-* 04:50:00";
+          OnCalendar = "*-*-* 04:55:00";
           Unit = "scheduled-reboot.service";
           Persistent = true;
         };

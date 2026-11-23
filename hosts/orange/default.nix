@@ -18,7 +18,7 @@ in
       ];
     };
     deploy.nodes.${hostname} = {
-      hostname = "10.100.0.2"; # Initially we need the ip address
+      hostname = "${hostname}.${host.environment.BASE_DOMAIN}"; # Initially we need the ip address
       profiles.system = {
         sshUser = "root";
         path = inputs.deploy-rs.lib.${host.system}.activate.nixos self.nixosConfigurations.${hostname};
